@@ -1,0 +1,22 @@
+{
+  "name": "@mimic/api",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8",
+    "@fastify/websocket": "^8",
+    "@mimic/core": "workspace:*",
+    "fastify": "^4"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3"
+  }
+}

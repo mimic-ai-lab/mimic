@@ -1,0 +1,21 @@
+{
+  "name": "@mimic/worker",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@mimic/core": "workspace:*",
+    "bullmq": "^4",
+    "ioredis": "^5"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3"
+  }
+}

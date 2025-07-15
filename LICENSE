@@ -1,21 +1,41 @@
-MIT License
-
 Copyright (c) 2024 Mimic Contributors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This software and associated documentation files (the "Software") are licensed under the Elastic License 2.0 (the "License"); you may not use this file except in compliance with the License.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+You may obtain a copy of the License at:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+https://www.elastic.co/licensing/elastic-license
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
+## Fair-code Model
+
+Mimic follows the [fair-code](https://faircode.io/) software model:
+
+- ✅ **Free to use** - You can use Mimic privately or within your company
+- ✅ **Open source** - Source code is publicly available
+- ✅ **Community extensible** - Anyone can contribute and extend
+- ❌ **Commercially restricted** - Only the original authors can commercialize
+
+### What this means for you:
+
+**You CAN:**
+
+- Use Mimic for personal projects
+- Use Mimic within your company (even with 10,000+ employees)
+- Modify and extend the code
+- Contribute back to the community
+- Distribute modified versions
+
+**You CANNOT:**
+
+- Provide Mimic as a commercial hosted service
+- Sell Mimic or modified versions
+- Use Mimic to provide commercial consulting services
+- Commercialize any derivative works
+
+### Commercial Use
+
+If you want to commercialize Mimic (hosted service, consulting, etc.), please contact the Mimic team to discuss licensing options.
+
+For questions about commercial use, contact: [your-email@example.com]

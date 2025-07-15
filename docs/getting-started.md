@@ -57,7 +57,7 @@ sudo systemctl start postgresql
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-org/mimic.git
+git clone https://github.com/mimic-ai-lab/mimic.git
 cd mimic
 ```
 
@@ -293,8 +293,8 @@ Error: Port 3000/4000 already in use
 ### Getting Help
 
 - **Documentation**: Check the [docs/](./) directory
-- **Issues**: [GitHub Issues](https://github.com/your-org/mimic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/mimic/discussions)
+- **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
 
 ## 🎉 Next Steps
 

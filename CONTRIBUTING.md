@@ -22,6 +22,7 @@ We welcome contributions from the community! Here are the main ways you can help
 - [Pull Request Process](#pull-request-process)
 - [Issue Guidelines](#issue-guidelines)
 - [Release Process](#release-process)
+- [License Information](#license-information)
 
 ## 🤝 Code of Conduct
 
@@ -329,6 +330,38 @@ We follow [Semantic Versioning](https://semver.org/):
    - Write release notes
    - Publish to npm (if applicable)
 
+## 📄 License Information
+
+Mimic is licensed under the **Elastic License 2.0** and follows the [fair-code](https://faircode.io/) software model.
+
+### What this means for contributors:
+
+**✅ You CAN:**
+
+- Use Mimic for personal projects
+- Use Mimic within your company (even with 10,000+ employees)
+- Modify and extend the code
+- Contribute back to the community
+- Distribute modified versions
+
+**❌ You CANNOT:**
+
+- Provide Mimic as a commercial hosted service
+- Sell Mimic or modified versions
+- Use Mimic to provide commercial consulting services
+- Commercialize any derivative works
+
+### Why Fair-code?
+
+Fair-code ensures that:
+
+- **Creators can sustain development** through commercial use
+- **Community benefits** from open collaboration
+- **Contributors are respected** for their work
+- **Long-term viability** of the project
+
+By contributing to Mimic, you agree that your contributions will be licensed under the [Elastic License 2.0](./LICENSE).
+
 ## 🎯 Areas for Contribution
 
 ### High Priority
@@ -357,8 +390,8 @@ We follow [Semantic Versioning](https://semver.org/):
 ### Getting Help
 
 - **Documentation**: [docs/](./docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/mimic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/mimic/discussions)
+- **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
 - **Discord**: [Join our community](https://discord.gg/mimic)
 
 ### Recognition
@@ -368,10 +401,6 @@ Contributors are recognized in:
 - **README.md** - Contributors section
 - **CHANGELOG.md** - Release notes
 - **GitHub Contributors** - Profile badges
-
-## 📄 License
-
-By contributing to Mimic, you agree that your contributions will be licensed under the [MIT License](./LICENSE).
 
 ---
 

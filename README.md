@@ -1,15 +1,16 @@
 # Mimic 🤖
 
-> **Open-core platform for stress-testing conversational AI agents with realistic, LLM-driven virtual users**
+> **Source-available platform for stress-testing conversational AI agents with realistic, LLM-driven virtual users**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Elastic 2.0](https://img.shields.io/badge/License-Elastic%202.0-blue.svg)](https://www.elastic.co/licensing/elastic-license)
+[![Fair-code](https://img.shields.io/badge/Fair--code-Enabled-green.svg)](https://faircode.io/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
 [![Yarn](https://img.shields.io/badge/Yarn-4.9.1-blue.svg)](https://yarnpkg.com/)
 [![Turbo](https://img.shields.io/badge/Turbo-2.5.4-blue.svg)](https://turbo.build/)
 
 ## 🎯 What is Mimic?
 
-Mimic is an open-core platform that lets developers **stress-test** their conversational or voice AI agents with swarms of realistic, LLM-driven "virtual users."
+Mimic is a **source-available** platform that lets developers **stress-test** their conversational or voice AI agents with swarms of realistic, LLM-driven "virtual users."
 
 Point Mimic at your WhatsApp bot, WebSocket server, or voice IVR, define a few persona prompts, and Mimic spins up hundreds of simulated parents, customers, or gamers that chat, call, and push your agent to its limits—so you can find edge-cases before real customers do.
 
@@ -52,7 +53,7 @@ infra/            # Terraform / Docker Compose / Helm (IaC)
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/mimic.git
+git clone https://github.com/mimic-ai-lab/mimic.git
 cd mimic
 
 # Install dependencies
@@ -167,7 +168,28 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+Mimic is **source-available** under the **Elastic License 2.0** and follows the [fair-code](https://faircode.io/) software model.
+
+### What this means:
+
+**✅ You CAN:**
+
+- Use Mimic for personal projects
+- Use Mimic within your company (even with 10,000+ employees)
+- Modify and extend the code
+- Contribute back to the community
+- Self-host for internal use
+
+**❌ You CANNOT:**
+
+- Provide Mimic as a commercial hosted service
+- Sell Mimic or modified versions
+- Use Mimic for commercial consulting services
+- Commercialize any derivative works
+
+**📝 Important:** This is **source-available** software, not OSI-approved open source. The source code is publicly available, but commercial use is restricted to protect the project's sustainability.
+
+For commercial use inquiries, please [contact the Mimic team](mailto:hello@mimicailab.com).
 
 ## 🙏 Acknowledgments
 
@@ -179,9 +201,9 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 📞 Support
 
 - **Documentation**: [docs/](./docs/)
-- **Issues**: [GitHub Issues](https://github.com/your-org/mimic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-org/mimic/discussions)
-- **Discord**: [Join our community](https://discord.gg/mimic)
+  - **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
+  - **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
+- **Discord**: [Join our community](https://discord.gg/6WjrYg7Q)
 
 ---
 

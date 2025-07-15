@@ -1,6 +1,6 @@
 # Mimic 🤖
 
-> **Open-core platform for stress-testing conversational AI agents with realistic, LLM-driven virtual users**
+> **Source-available platform for stress-testing conversational AI agents with realistic, LLM-driven virtual users**
 
 [![License: Elastic 2.0](https://img.shields.io/badge/License-Elastic%202.0-blue.svg)](https://www.elastic.co/licensing/elastic-license)
 [![Fair-code](https://img.shields.io/badge/Fair--code-Enabled-green.svg)](https://faircode.io/)
@@ -10,7 +10,7 @@
 
 ## 🎯 What is Mimic?
 
-Mimic is an open-core platform that lets developers **stress-test** their conversational or voice AI agents with swarms of realistic, LLM-driven "virtual users."
+Mimic is a **source-available** platform that lets developers **stress-test** their conversational or voice AI agents with swarms of realistic, LLM-driven "virtual users."
 
 Point Mimic at your WhatsApp bot, WebSocket server, or voice IVR, define a few persona prompts, and Mimic spins up hundreds of simulated parents, customers, or gamers that chat, call, and push your agent to its limits—so you can find edge-cases before real customers do.
 
@@ -168,7 +168,7 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 
 ## 📄 License
 
-This project is licensed under the **Elastic License 2.0** and follows the [fair-code](https://faircode.io/) software model.
+Mimic is **source-available** under the **Elastic License 2.0** and follows the [fair-code](https://faircode.io/) software model.
 
 ### What this means:
 
@@ -178,12 +178,16 @@ This project is licensed under the **Elastic License 2.0** and follows the [fair
 - Use Mimic within your company (even with 10,000+ employees)
 - Modify and extend the code
 - Contribute back to the community
+- Self-host for internal use
 
 **❌ You CANNOT:**
 
 - Provide Mimic as a commercial hosted service
 - Sell Mimic or modified versions
 - Use Mimic for commercial consulting services
+- Commercialize any derivative works
+
+**📝 Important:** This is **source-available** software, not OSI-approved open source. The source code is publicly available, but commercial use is restricted to protect the project's sustainability.
 
 For commercial use inquiries, please [contact the Mimic team](mailto:your-email@example.com).
 

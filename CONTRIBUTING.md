@@ -392,7 +392,7 @@ By contributing to Mimic, you agree that your contributions will be licensed und
 - **Documentation**: [docs/](./docs/)
 - **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
-- **Discord**: [Join our community](https://discord.gg/mimic)
+- **Discord**: [Join our community](https://discord.gg/6WjrYg7Q)
 
 ### Recognition
 

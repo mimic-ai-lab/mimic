@@ -189,7 +189,7 @@ Mimic is **source-available** under the **Elastic License 2.0** and follows the 
 
 **📝 Important:** This is **source-available** software, not OSI-approved open source. The source code is publicly available, but commercial use is restricted to protect the project's sustainability.
 
-For commercial use inquiries, please [contact the Mimic team](mailto:your-email@example.com).
+For commercial use inquiries, please [contact the Mimic team](mailto:hello@mimicailab.com).
 
 ## 🙏 Acknowledgments
 
@@ -201,9 +201,9 @@ For commercial use inquiries, please [contact the Mimic team](mailto:your-email@
 ## 📞 Support
 
 - **Documentation**: [docs/](./docs/)
-- **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
-- **Discord**: [Join our community](https://discord.gg/mimic)
+  - **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
+  - **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
+- **Discord**: [Join our community](https://discord.gg/6WjrYg7Q)
 
 ---
 

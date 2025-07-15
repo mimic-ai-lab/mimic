@@ -293,8 +293,8 @@ Error: Port 3000/4000 already in use
 ### Getting Help
 
 - **Documentation**: Check the [docs/](./) directory
-- **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
+  - **Issues**: [GitHub Issues](https://github.com/mimic-ai-lab/mimic/issues)
+  - **Discussions**: [GitHub Discussions](https://github.com/mimic-ai-lab/mimic/discussions)
 
 ## 🎉 Next Steps
 

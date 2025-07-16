@@ -2,21 +2,34 @@
   "name": "@mimic/api",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@fastify/cors": "^8",
     "@fastify/websocket": "^8",
+    "@mgcrea/pino-pretty-compact": "^1.4.2",
     "@mimic/core": "workspace:*",
-    "fastify": "^4"
+    "@sentry/node": "^7.92.0",
+    "@types/node": "^20.11.30",
+    "fastify": "^4",
+    "fastify-plugin": "^5.0.1",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.0.4",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.4.0",
     "tsx": "^4.20.3"
   }
 }

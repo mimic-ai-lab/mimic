@@ -7,17 +7,25 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Mimic Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Stress-testing conversational AI agents
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">
+              Mimic Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Stress-testing conversational AI agents
+            </p>
+          </div>
+          <Link href="/signup">
+            <Button variant="outline">Sign Up</Button>
+          </Link>
         </div>
 
         {/* Main Content */}

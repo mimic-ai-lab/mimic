@@ -29,6 +29,7 @@ import cors from '@fastify/cors';
 
 import setupPlugins from '@/plugins';
 import setupRoutes from '@/routes';
+import { initializeDatabase, closeDatabase } from '@/lib';
 
 /**
  * Create and configure the Fastify server instance.
@@ -50,8 +51,12 @@ const fastify = Fastify({
     disableRequestLogging: true,
 });
 
+// Initialize database connection
+initializeDatabase();
+
 // Register all plugins (CORS, etc.)
 setupPlugins(fastify);
+
 // Register all API routes
 setupRoutes(fastify);
 
@@ -69,20 +74,33 @@ export async function build(): Promise<FastifyInstance> {
 /**
  * Start the Fastify server.
  *
- * - Listens on the port specified by the PORT environment variable (default: 4000)
+ * - Listens on the port specified by the PORT environment variable (default: 4001)
  * - Binds to 0.0.0.0 for Docker/VM compatibility
  * - Logs errors and exits on failure
  */
 const start = async () => {
     try {
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4001;
         await fastify.listen({ port, host: '0.0.0.0' });
-        console.log(`Server running at http://0.0.0.0:${port}`);
     } catch (err) {
+        console.error("Server startup failed:", err);
         fastify.log.error(err);
         process.exit(1);
     }
 };
+
+// Graceful shutdown handling
+process.on('SIGINT', async () => {
+    console.log('Received SIGINT, shutting down gracefully...');
+    await closeDatabase();
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('Received SIGTERM, shutting down gracefully...');
+    await closeDatabase();
+    process.exit(0);
+});
 
 // Start the server
 start();

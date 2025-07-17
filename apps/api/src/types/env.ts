@@ -21,6 +21,14 @@ export const envSchema = z.object({
 
     // Sentry
     SENTRY_DSN: z.string().optional(),
+
+    // Better Auth
+    BETTER_AUTH_SECRET: z.string(),
+    BETTER_AUTH_URL: z.string().url().default('http://localhost:4000'),
+
+    // Resend (Email Service)
+    RESEND_API_KEY: z.string(),
+    RESEND_FROM_EMAIL: z.string().email().default('noreply@mimic.dev'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>; 

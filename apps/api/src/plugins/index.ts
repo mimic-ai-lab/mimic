@@ -10,15 +10,20 @@ import envPlugin from './env';
 
 export default async function setupPlugins(fastify: FastifyInstance): Promise<void> {
     // Register environment validation plugin first
-    await fastify.register(envPlugin);
+    // await fastify.register(envPlugin);
 
-    // Enable CORS for all origins and common HTTP methods
+    // Configure CORS policies for Better Auth
     fastify.register(cors, {
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        exposedHeaders: ['Content-Range', 'X-Content-Range'],
-        credentials: false,
+        origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With"
+        ],
+        credentials: true,
+        maxAge: 86400
     });
+
     // Register additional plugins here as needed
 }

@@ -4,29 +4,52 @@
  * Validates required environment variables and provides type-safe access
  * to configuration values throughout the application.
  */
-import { FastifyInstance, FastifyPluginAsync, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import { z } from 'zod';
-import { envSchema, type EnvConfig } from '@/types/env';
+import '../types/fastify';
+
+// Adapted schema for this project
+const envSchema = z.object({
+    // Database
+    DATABASE_URL: z.string().url(),
+
+    // Resend (Email Service)
+    RESEND_API_KEY: z.string(),
+    RESEND_FROM_EMAIL: z.string().email().default('noreply@mimic.dev'),
+
+    // Better Auth
+    BETTER_AUTH_SECRET: z.string(),
+    BETTER_AUTH_URL: z.string().url().default('http://localhost:4000'),
+
+    // Server
+    PORT: z.string().transform(Number).default(4001),
+    NODE_ENV: z.string().default('development'),
+    LOG_LEVEL: z.string().default('info'),
+
+    // Sentry
+    SENTRY_DSN: z.string().optional(),
+});
+
+type EnvConfig = z.infer<typeof envSchema>;
+export type { EnvConfig };
 
 const envPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     try {
-        const config = envSchema.parse(process.env);
+        const configs = envSchema.parse(process.env);
 
-        // Decorate FastifyInstance with validated config
-        fastify.decorate('env', config);
+        // Decorate the FastifyInstance
+        fastify.decorate('env', configs);
 
-        // Add hook to decorate each request with env config
-        fastify.addHook('onRequest', async (request: FastifyRequest) => {
-            request.env = config;
+        // Add a hook to decorate each request with the env
+        fastify.addHook('onRequest', async (request) => {
+            request.env = configs;
         });
-
-        fastify.log.info('Environment validation successful');
     } catch (error) {
         if (error instanceof z.ZodError) {
-            fastify.log.error('Environment validation failed:');
-            error.issues.forEach((issue: z.ZodIssue) => {
-                fastify.log.error(`- ${issue.path.join('.')}: ${issue.message}`);
+            console.error('Environment validation failed with the following errors:');
+            error.issues.forEach((err: any) => {
+                console.error(`- ${err.path.join('.')}: ${err.message}`);
             });
             throw new Error('Environment validation failed');
         }

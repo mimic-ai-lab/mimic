@@ -2,7 +2,7 @@
   "name": "@mimic/api",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "bash -c 'cd ../.. && export $(grep -v \"^#\" .env | xargs) && cd apps/api && tsx watch src/server.ts'",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
@@ -20,12 +20,17 @@
     "@mimic/core": "workspace:*",
     "@sentry/node": "^7.92.0",
     "@types/node": "^20.11.30",
+    "better-auth": "^1.2.12",
     "fastify": "^4",
     "fastify-plugin": "^5.0.1",
+    "kysely": "^0.28.2",
+    "pg": "^8.16.3",
+    "resend": "^4.6.0",
     "zod": "^4.0.5"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@types/pg": "^8",
     "@types/supertest": "^6.0.3",
     "jest": "^30.0.4",
     "supertest": "^7.0.0",

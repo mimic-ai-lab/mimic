@@ -6,61 +6,101 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Mail, Github, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Mail,
+  Github,
+  X,
+  CheckCircle,
+  RefreshCw,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signupSchema, type SignupFormData } from '@/lib/validations';
+import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { authClient } from '@/lib/auth-client';
+import { AuthService } from '@/lib/auth-service';
 
-export default function SignupPage() {
+// Simple email validation schema
+const authSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+});
+
+type AuthFormData = z.infer<typeof authSchema>;
+
+export default function AuthPage() {
   const router = useRouter();
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [emailSent, setEmailSent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<AuthFormData>({
+    resolver: zodResolver(authSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
       email: '',
     },
   });
 
-  const onSubmit = async (data: SignupFormData) => {
+  const onSubmit = async (data: AuthFormData) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Use Better Auth client for magic link signup
-      // The magic link plugin automatically handles both sign-in and sign-up
-      // Note: organisation is handled by the backend with a default value
-      await authClient.signIn.magicLink({
-        email: data.email,
-        name: data.name,
-        callbackURL: '/', // Redirect to dashboard after successful signup
-      });
-      setSuccess(true);
+      // Use the custom auth service that handles standardized API responses
+      await AuthService.signInWithMagicLink(data.email, '/');
+
+      setMagicLinkSent(true);
+      setEmailSent(data.email);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      console.error('Auth error:', err);
+
+      // Extract error message
+      let errorMessage = 'Failed to send magic link';
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendMagicLink = async () => {
+    if (!emailSent) return;
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      await AuthService.signInWithMagicLink(emailSent, '/');
+      // Show success message briefly
+    } catch (err) {
+      console.error('Resend error:', err);
+
+      // Extract error message
+      let errorMessage = 'Failed to resend magic link';
+
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleSocialAuth = (provider: 'github' | 'google') => {
-    // Use Better Auth client for social auth
-    try {
-      authClient.signIn.social({ provider });
-    } catch (err) {
-      setError('Social authentication failed');
-    }
+    // Note: This would need to be updated when social auth is implemented
+    setError('Social authentication not yet implemented');
   };
 
   return (
@@ -88,23 +128,81 @@ export default function SignupPage() {
 
         <Card className="w-full p-0 max-h-[600px] lg:max-h-[700px] shadow-xl border border-gray-200 overflow-hidden">
           <CardContent className="p-0 h-full flex">
-            {/* Left Section - Signup Form */}
+            {/* Left Section - Auth Form */}
             <div className="flex-1 lg:flex-[0.5] flex flex-col p-6 lg:p-8 bg-white">
               {/* Header */}
               <div className="space-y-2 mb-6">
                 <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900">
-                  Hello there.
+                  Welcome to Mimic
                 </h1>
                 <p className="text-sm lg:text-base text-gray-600">
-                  Let's get you onboarded.
+                  Sign in or create your account with a magic link.
                 </p>
               </div>
 
-              {/* Signup Form */}
-              {success ? (
-                <div className="text-green-700 bg-green-50 p-4 rounded-lg border border-green-200">
-                  Account created! Please check your email to verify your
-                  account and sign in.
+              {/* Auth Form */}
+              {magicLinkSent ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+                  {/* Success Icon */}
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+
+                  {/* Success Message */}
+                  <div className="space-y-3">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Check your email
+                    </h2>
+                    <p className="text-gray-600 max-w-sm">
+                      We've sent a magic link to{' '}
+                      <span className="font-medium text-gray-900">
+                        {emailSent}
+                      </span>
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Click the link in your email to sign in to your account.
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3 w-full max-w-xs">
+                    <Button
+                      onClick={handleResendMagicLink}
+                      disabled={isSubmitting}
+                      variant="outline"
+                      className="w-full h-11 bg-white hover:bg-gray-50 border-gray-300 hover:border-gray-400 text-gray-700 hover:text-gray-900 transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          Resending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="w-4 h-4 mr-2" />
+                          Resend magic link
+                        </>
+                      )}
+                    </Button>
+
+                    <Button
+                      onClick={() => {
+                        setMagicLinkSent(false);
+                        setEmailSent('');
+                        setError(null);
+                      }}
+                      variant="ghost"
+                      className="w-full h-10 text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                    >
+                      Use a different email
+                    </Button>
+                  </div>
+
+                  {/* Help Text */}
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <p>Didn't receive the email? Check your spam folder.</p>
+                    <p>Magic links expire in 5 minutes for security.</p>
+                  </div>
                 </div>
               ) : (
                 <form
@@ -112,26 +210,6 @@ export default function SignupPage() {
                   className="space-y-4 flex-1"
                 >
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="name"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Full Name
-                      </Label>
-                      <Input
-                        id="name"
-                        placeholder="Enter your full name"
-                        {...register('name')}
-                        className={`h-10 border-gray-300 focus:border-gray-900 focus:ring-gray-900 ${
-                          errors.name
-                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500 !important'
-                            : ''
-                        }`}
-                        disabled={isSubmitting}
-                      />
-                    </div>
-
                     <div className="space-y-2">
                       <Label
                         htmlFor="email"
@@ -151,6 +229,11 @@ export default function SignupPage() {
                         }`}
                         disabled={isSubmitting}
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-600">
+                          {errors.email.message}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -165,7 +248,9 @@ export default function SignupPage() {
                     className="w-full h-10 bg-gray-900 hover:bg-gray-800 text-white font-medium"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Signing up...' : 'Sign Up'}
+                    {isSubmitting
+                      ? 'Sending magic link...'
+                      : 'Continue with Email'}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
 
@@ -224,18 +309,9 @@ export default function SignupPage() {
                   {/* Footer */}
                   <div className="text-center space-y-2 mt-auto pt-4">
                     <p className="text-xs lg:text-sm text-gray-500">
-                      © Mimic AI Lab. By signing up, you agree to our Terms of
+                      © Mimic AI Lab. By continuing, you agree to our Terms of
                       Service and Privacy Policy.
                     </p>
-                    <div className="pt-2">
-                      <Link
-                        href="/login"
-                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                      >
-                        Already have an account?{' '}
-                        <span className="font-medium underline">Login</span>
-                      </Link>
-                    </div>
                   </div>
                 </form>
               )}

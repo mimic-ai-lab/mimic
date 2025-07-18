@@ -111,25 +111,30 @@ export async function sendMagicLinkEmail(email: string, url: string): Promise<vo
         throw new Error("RESEND_FROM_EMAIL environment variable is required");
     }
 
-    await emailService.sendEmail({
-        from: fromEmail,
-        to: email,
-        subject: "Sign in to Mimic",
-        html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #333;">Welcome to Mimic!</h2>
-                <p>Click the button below to sign in to your account:</p>
-                <a href="${url}" 
-                   style="display: inline-block; background: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">
-                    Sign In
-                </a>
-                <p style="color: #666; font-size: 14px;">
-                    If you didn't request this email, you can safely ignore it.
-                </p>
-                <p style="color: #666; font-size: 14px;">
-                    This link will expire in 5 minutes.
-                </p>
-            </div>
-        `,
-    });
+    try {
+        await emailService.sendEmail({
+            from: fromEmail,
+            to: email,
+            subject: "Sign in to Mimic",
+            html: `
+                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Welcome to Mimic!</h2>
+                    <p>Click the button below to sign in to your account:</p>
+                    <a href="${url}" 
+                       style="display: inline-block; background: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 16px 0;">
+                        Sign In
+                    </a>
+                    <p style="color: #666; font-size: 14px;">
+                        If you didn't request this email, you can safely ignore it.
+                    </p>
+                    <p style="color: #666; font-size: 14px;">
+                        This link will expire in 5 minutes.
+                    </p>
+                </div>
+            `,
+        });
+    } catch (error) {
+        console.error('Failed to send magic link email to:', email, error);
+        throw error;
+    }
 } 

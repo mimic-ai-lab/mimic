@@ -22,6 +22,12 @@ const envSchema = z.object({
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.string().url().default('http://localhost:4000'),
 
+    // OAuth Providers
+    GITHUB_CLIENT_ID: z.string().optional(),
+    GITHUB_CLIENT_SECRET: z.string().optional(),
+    GOOGLE_CLIENT_ID: z.string().optional(),
+    GOOGLE_CLIENT_SECRET: z.string().optional(),
+
     // Server
     PORT: z.string().transform(Number).default(4000),
     NODE_ENV: z.string().default('development'),

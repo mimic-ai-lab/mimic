@@ -27,31 +27,6 @@ const auth = betterAuth({
         casing: 'camel'
     },
 
-    // Email and password authentication
-    emailAndPassword: {
-        enabled: true,
-        disableSignUp: false,
-        requireEmailVerification: false, // Since we're using magic links
-        minPasswordLength: 8,
-        maxPasswordLength: 128,
-        autoSignIn: true,
-        sendResetPassword: async ({ user, url, token }) => {
-            // You can implement password reset if needed
-            await sendMagicLinkEmail(user.email, url);
-        },
-        resetPasswordTokenExpiresIn: 3600, // 1 hour
-    },
-
-    // Email verification (optional, since we're using magic links)
-    emailVerification: {
-        sendVerificationEmail: async ({ user, url, token }) => {
-            await sendMagicLinkEmail(user.email, url);
-        },
-        sendOnSignUp: false, // We handle this with magic link plugin
-        autoSignInAfterVerification: true,
-        expiresIn: 3600 // 1 hour
-    },
-
     // Session configuration
     session: {
         modelName: "sessions",
@@ -82,6 +57,20 @@ const auth = betterAuth({
             }
         }
     },
+
+    // OAuth providers
+    // oauth: {
+    //     github: {
+    //         clientId: process.env.GITHUB_CLIENT_ID || "",
+    //         clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+    //         scope: ["user:email"],
+    //     },
+    //     google: {
+    //         clientId: process.env.GOOGLE_CLIENT_ID || "",
+    //         clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    //         scope: ["openid", "email", "profile"],
+    //     },
+    // },
 
     // Rate limiting
     rateLimit: {

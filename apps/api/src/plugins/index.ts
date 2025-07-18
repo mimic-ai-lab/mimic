@@ -7,10 +7,14 @@
 import { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import envPlugin from './env';
+import responseStandardizer from './response-standardizer';
 
 export default async function setupPlugins(fastify: FastifyInstance): Promise<void> {
     // Register environment validation plugin first
-    // await fastify.register(envPlugin);
+    fastify.register(envPlugin);
+
+    // Register response standardizer plugin
+    fastify.register(responseStandardizer);
 
     // Configure CORS policies for Better Auth
     fastify.register(cors, {

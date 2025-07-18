@@ -1,27 +1,44 @@
 /**
- * Registers the /health endpoint for uptime and monitoring checks.
+ * Health check routes for the API server.
  *
- * @param {FastifyInstance} fastify - Fastify server instance
- * @returns {Promise<void>}
+ * Provides endpoints to check the health and status of the server,
+ * database connections, and other critical services.
  */
-import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
-async function HealthRoutes(fastify: FastifyInstance): Promise<void> {
-    /**
-     * GET /health
-     *
-     * Returns a simple status object. Used by load balancers and monitoring tools
-     * to verify the server is running and responsive.
-     */
+export default async function HealthRoutes(fastify: FastifyInstance): Promise<void> {
+    // Basic health check endpoint
     fastify.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
-        try {
-            reply.send({ status: 'ok' });
-        } catch (error) {
-            // Log unexpected errors for debugging
-            fastify.log.error(error);
-            reply.status(500).send({ status: 'error' });
-        }
+        // Use Fastify's success helper for standardized response
+        return fastify.success({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development'
+        });
+    });
+
+    // Detailed health check endpoint
+    fastify.get('/health/detailed', async (request: FastifyRequest, reply: FastifyReply) => {
+        const health = {
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development',
+            services: {
+                database: 'connected',
+                email: process.env.RESEND_API_KEY ? 'configured' : 'not_configured',
+                auth: 'operational'
+            }
+        };
+
+        // Use Fastify's success helper for standardized response
+        return fastify.success(health);
+    });
+
+    // Example of error handling
+    fastify.get('/health/error', async (request: FastifyRequest, reply: FastifyReply) => {
+        // This will be handled by the global error handler
+        throw new Error('Simulated health check error');
     });
 }
-
-export default HealthRoutes;

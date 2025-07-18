@@ -12,6 +12,7 @@
  */
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { auth } from '@/lib';
+import { mapBetterAuthError } from '@/lib/response-helpers';
 
 /**
  * Registers authentication routes with the Fastify instance.
@@ -56,37 +57,61 @@ export default async function AuthRoutes(fastify: FastifyInstance): Promise<void
                 // Process authentication request through Better Auth
                 const response = await auth.handler(req);
 
-                // Debug: Log response headers
-                console.log('Better Auth Response Status:', response.status);
-                console.log('Better Auth Response Headers:');
-                response.headers.forEach((value: string, key: string) => {
-                    console.log(`  ${key}: ${value}`);
-                });
+                // Check if response is successful
+                if (response.ok) {
+                    // Parse Better Auth response
+                    const responseBody = await response.text();
+                    let data;
 
-                // Forward response to client
-                reply.status(response.status);
-
-                // Copy all response headers, especially Set-Cookie headers
-                response.headers.forEach((value: string, key: string) => {
-                    if (key.toLowerCase() === 'set-cookie') {
-                        // Handle Set-Cookie headers specially
-                        console.log(`Setting cookie: ${key} = ${value}`);
-                        reply.header(key, value);
-                    } else {
-                        reply.header(key, value);
+                    try {
+                        data = responseBody ? JSON.parse(responseBody) : null;
+                    } catch {
+                        data = responseBody;
                     }
-                });
 
-                // Send response body if present
-                const responseBody = response.body ? await response.text() : null;
-                reply.send(responseBody);
+                    // Set response status and headers
+                    reply.status(response.status);
+
+                    // Copy all response headers, especially Set-Cookie headers
+                    response.headers.forEach((value: string, key: string) => {
+                        if (key.toLowerCase() === 'set-cookie') {
+                            // Handle Set-Cookie headers specially
+                            reply.header(key, value);
+                        } else {
+                            reply.header(key, value);
+                        }
+                    });
+
+                    // Send raw Better Auth response
+                    reply.send(data);
+                } else {
+                    // Handle error response
+                    const responseBody = await response.text();
+                    let errorData;
+
+                    try {
+                        errorData = responseBody ? JSON.parse(responseBody) : null;
+                    } catch {
+                        errorData = { message: responseBody || 'Authentication failed' };
+                    }
+
+                    // Set error status
+                    reply.status(response.status);
+
+                    // Copy headers for consistency
+                    response.headers.forEach((value: string, key: string) => {
+                        reply.header(key, value);
+                    });
+
+                    // Send raw Better Auth error response
+                    reply.send(errorData);
+                }
 
             } catch (error) {
                 fastify.log.error("Authentication Error:", error);
-                reply.status(500).send({
-                    error: "Internal authentication error",
-                    code: "AUTH_FAILURE"
-                });
+
+                // Let the global error handler handle this
+                throw error;
             }
         }
     });

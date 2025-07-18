@@ -19,13 +19,12 @@ export async function middleware(request: NextRequest) {
         request.nextUrl.pathname.startsWith("/settings");
 
     // Define auth pages that authenticated users shouldn't access
-    const isAuthPage = request.nextUrl.pathname === "/login" ||
-        request.nextUrl.pathname === "/signup" ||
+    const isAuthPage = request.nextUrl.pathname === "/auth" ||
         request.nextUrl.pathname === "/verify";
 
     // Redirect unauthenticated users away from protected routes
     if (!hasSession && isProtectedRoute) {
-        return NextResponse.redirect(new URL("/login", request.url));
+        return NextResponse.redirect(new URL("/auth", request.url));
     }
 
     // Redirect authenticated users away from auth pages

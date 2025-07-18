@@ -6,10 +6,12 @@
  */
 import { type EnvConfig } from './env';
 
-// Extend Fastify types to include env decorator
+// Extend Fastify types to include env decorator and response helpers
 declare module 'fastify' {
     interface FastifyInstance {
         env: EnvConfig;
+        success: (data: any, pagination?: any) => any;
+        error: (code: string, message: string, details?: any) => any;
     }
     interface FastifyRequest {
         env: EnvConfig;

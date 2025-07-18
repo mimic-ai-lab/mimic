@@ -82,7 +82,7 @@ export default function VerifyPage() {
             <div className="space-y-4">
               <XCircle className="w-8 h-8 mx-auto text-red-500" />
               <p className="text-red-600">{message}</p>
-              <Button onClick={() => router.push('/login')} className="w-full">
+              <Button onClick={() => router.push('/auth')} className="w-full">
                 Go to Login
               </Button>
             </div>

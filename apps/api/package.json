@@ -2,21 +2,39 @@
   "name": "@mimic/api",
   "private": true,
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "bash -c 'cd ../.. && export $(grep -v \"^#\" .env | xargs) && cd apps/api && tsx watch src/server.ts'",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@fastify/cors": "^8",
-    "@fastify/websocket": "^8",
+    "@clerk/fastify": "^2.4.10",
+    "@fastify/cors": "^11.0.1",
+    "@fastify/websocket": "^11.2.0",
+    "@mgcrea/pino-pretty-compact": "^1.4.2",
     "@mimic/core": "workspace:*",
-    "fastify": "^4"
+    "@sentry/node": "^9.40.0",
+    "@types/node": "^24.0.14",
+    "fastify": "^5.4.0",
+    "fastify-plugin": "^5.0.1",
+    "kysely": "^0.28.3",
+    "pg": "^8.16.3",
+    "resend": "^4.7.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/pg": "^8",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.0.4",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.4.0",
     "tsx": "^4.20.3"
   }
 }

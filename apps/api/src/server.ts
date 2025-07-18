@@ -80,7 +80,7 @@ export async function build(): Promise<FastifyInstance> {
  */
 const start = async () => {
     try {
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+        const port = process.env.API_SERVER_PORT ? parseInt(process.env.API_SERVER_PORT, 10) : 4000;
         await fastify.listen({ port, host: '0.0.0.0' });
         console.log(`Server running at http://0.0.0.0:${port}`);
     } catch (err) {

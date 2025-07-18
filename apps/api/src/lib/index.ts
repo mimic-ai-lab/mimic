@@ -8,10 +8,3 @@
 // Database exports
 export { getDatabase, initializeDatabase, closeDatabase } from './database';
 export type { Database } from './database';
-
-// Email service exports
-export { getEmailService, isEmailConfigured, sendMagicLinkEmail } from './email';
-export type { EmailService } from './email';
-
-// Auth exports
-export { auth } from './auth'; 

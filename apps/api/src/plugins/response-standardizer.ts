@@ -6,7 +6,6 @@
  */
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import { mapBetterAuthError } from '@/lib/response-helpers';
 
 const responseStandardizerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     // Add response helpers to fastify instance
@@ -30,31 +29,7 @@ const responseStandardizerPlugin: FastifyPluginAsync = async (fastify: FastifyIn
         };
     });
 
-    // Global error handler for standardized error responses
-    fastify.setErrorHandler((error, request, reply) => {
-        fastify.log.error(error);
-
-        // Map error to our standardized format
-        const { code, message } = mapBetterAuthError(error);
-
-        // Set appropriate status code
-        const statusCode = error.statusCode || 500;
-        reply.status(statusCode);
-
-        // Send standardized error response
-        reply.send(fastify.error(code, message, {
-            timestamp: new Date().toISOString(),
-            path: request.url
-        }));
-    });
-
-    // Global response hook to ensure consistent formatting
     fastify.addHook('onSend', async (request, reply, payload) => {
-        // Skip auth routes - Better Auth expects specific response formats
-        if (request.url.startsWith('/api/auth')) {
-            return payload;
-        }
-
         // Skip if payload is already formatted (like our error responses)
         if (payload && typeof payload === 'object' &&
             ('data' in payload || 'error' in payload)) {

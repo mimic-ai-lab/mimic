@@ -27,8 +27,7 @@ export default async function HealthRoutes(fastify: FastifyInstance): Promise<vo
             environment: process.env.NODE_ENV || 'development',
             services: {
                 database: 'connected',
-                email: process.env.RESEND_API_KEY ? 'configured' : 'not_configured',
-                auth: 'operational'
+                auth: process.env.CLERK_SECRET_KEY ? 'configured' : 'not_configured'
             }
         };
 

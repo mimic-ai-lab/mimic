@@ -8,6 +8,8 @@ import { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import envPlugin from './env';
 import responseStandardizer from './response-standardizer';
+import { clerkPlugin } from '@clerk/fastify'
+
 
 export default async function setupPlugins(fastify: FastifyInstance): Promise<void> {
     // Register environment validation plugin first
@@ -28,6 +30,9 @@ export default async function setupPlugins(fastify: FastifyInstance): Promise<vo
         credentials: true,
         maxAge: 86400
     });
+
+    fastify.register(clerkPlugin)
+
 
     // Register additional plugins here as needed
 }

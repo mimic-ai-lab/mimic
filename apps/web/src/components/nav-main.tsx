@@ -21,11 +21,11 @@ export function NavMain({
   }[];
 }) {
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-      <SidebarMenu>
+    <SidebarGroup className="py-2">
+      <SidebarGroupLabel className="px-3 pb-2">Platform</SidebarGroupLabel>
+      <SidebarMenu className="space-y-1">
         {items.map((item) => (
-          <SidebarMenuItem key={item.title}>
+          <SidebarMenuItem key={item.title} className="px-2">
             <SidebarMenuButton asChild tooltip={item.title}>
               <a href={item.url}>
                 {item.icon && <item.icon />}

@@ -1,148 +1,85 @@
-import { Button } from '@/components/ui/button';
+import { AppSidebar } from '@/components/app-sidebar';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              Mimic Dashboard
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Stress-testing conversational AI agents
-            </p>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Overview</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
-          <Link href="/signup">
-            <Button variant="outline">Sign Up</Button>
-          </Link>
-        </div>
-
-        {/* Main Content */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* API Status Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>API Status</CardTitle>
-              <CardDescription>Backend API health and status</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                <span className="text-sm text-muted-foreground">
-                  API is running
-                </span>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="bg-muted/50 aspect-video rounded-xl flex items-center justify-center">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">Active Sessions</h3>
+                <p className="text-3xl font-bold text-blue-600">0</p>
+                <p className="text-sm text-muted-foreground">Running tests</p>
               </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Endpoint:{' '}
-                <code className="bg-muted px-1 rounded">
-                  http://localhost:4000/health
-                </code>
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks and operations</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="default">
-                Create New Test
-              </Button>
-              <Button className="w-full" variant="outline">
-                View Test Results
-              </Button>
-              <Button className="w-full" variant="outline">
-                Manage Agents
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Search Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Search Tests</CardTitle>
-              <CardDescription>
-                Find existing test configurations
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Input placeholder="Search tests..." />
-                <Button className="w-full" variant="secondary">
-                  Search
-                </Button>
+            </div>
+            <div className="bg-muted/50 aspect-video rounded-xl flex items-center justify-center">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">Total Personas</h3>
+                <p className="text-3xl font-bold text-green-600">0</p>
+                <p className="text-sm text-muted-foreground">
+                  Available personas
+                </p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity Card */}
-          <Card className="md:col-span-2 lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest test runs and results</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">Agent Stress Test #1</p>
-                    <p className="text-sm text-muted-foreground">
-                      Completed 2 hours ago
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    <span className="text-sm">Passed</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">Conversation Flow Test</p>
-                    <p className="text-sm text-muted-foreground">
-                      Completed 5 hours ago
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
-                    <span className="text-sm">Warning</span>
-                  </div>
+            </div>
+            <div className="bg-muted/50 aspect-video rounded-xl flex items-center justify-center">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold mb-2">Connected Agents</h3>
+                <p className="text-3xl font-bold text-purple-600">0</p>
+                <p className="text-sm text-muted-foreground">Active agents</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-muted/50 min-h-[400px] flex-1 rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-background rounded-lg">
+                <div>
+                  <p className="font-medium">No recent activity</p>
+                  <p className="text-sm text-muted-foreground">
+                    Start your first test session to see activity here
+                  </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-12 pt-8 border-t">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Mimic v0.1.0 • Built with Next.js 15.4.1
-            </p>
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="sm">
-                Documentation
-              </Button>
-              <Button variant="ghost" size="sm">
-                GitHub
-              </Button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

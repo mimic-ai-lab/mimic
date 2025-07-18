@@ -56,12 +56,25 @@ export default async function AuthRoutes(fastify: FastifyInstance): Promise<void
                 // Process authentication request through Better Auth
                 const response = await auth.handler(req);
 
+                // Debug: Log response headers
+                console.log('Better Auth Response Status:', response.status);
+                console.log('Better Auth Response Headers:');
+                response.headers.forEach((value: string, key: string) => {
+                    console.log(`  ${key}: ${value}`);
+                });
+
                 // Forward response to client
                 reply.status(response.status);
 
-                // Copy all response headers
+                // Copy all response headers, especially Set-Cookie headers
                 response.headers.forEach((value: string, key: string) => {
-                    reply.header(key, value);
+                    if (key.toLowerCase() === 'set-cookie') {
+                        // Handle Set-Cookie headers specially
+                        console.log(`Setting cookie: ${key} = ${value}`);
+                        reply.header(key, value);
+                    } else {
+                        reply.header(key, value);
+                    }
                 });
 
                 // Send response body if present

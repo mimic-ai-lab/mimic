@@ -23,7 +23,7 @@ const envSchema = z.object({
     BETTER_AUTH_URL: z.string().url().default('http://localhost:4000'),
 
     // Server
-    PORT: z.string().transform(Number).default(4001),
+    PORT: z.string().transform(Number).default(4000),
     NODE_ENV: z.string().default('development'),
     LOG_LEVEL: z.string().default('info'),
 

@@ -32,6 +32,20 @@ export function PlatformConfigForm({
   formData,
   onFormDataChange,
 }: PlatformConfigFormProps) {
+  // Reusable function for checkbox change handling
+  const handleCheckboxChange = (
+    messageType: string,
+    checked: boolean,
+    currentFormData: FormData,
+    onFormDataChange: (data: Partial<FormData>) => void
+  ) => {
+    const current = currentFormData.messageTypes || ['text'];
+    const updated = checked
+      ? [...current, messageType]
+      : current.filter((t: string) => t !== messageType);
+    onFormDataChange({ messageTypes: updated });
+  };
+
   const renderPlatformFields = () => {
     switch (platform.id) {
       case 'whatsapp':
@@ -123,11 +137,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('text') ?? true
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || ['text'];
-                          const updated = checked
-                            ? [...current, 'text']
-                            : current.filter((t: string) => t !== 'text');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'text',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -150,14 +165,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('reaction') ?? true
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
+                          handleCheckboxChange(
                             'reaction',
-                          ];
-                          const updated = checked
-                            ? [...current, 'reaction']
-                            : current.filter((t: string) => t !== 'reaction');
-                          onFormDataChange({ messageTypes: updated });
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -180,15 +193,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('media') ?? true
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
+                          handleCheckboxChange(
                             'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'media']
-                            : current.filter((t: string) => t !== 'media');
-                          onFormDataChange({ messageTypes: updated });
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -211,15 +221,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('location') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'location']
-                            : current.filter((t: string) => t !== 'location');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'location',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -242,15 +249,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('contacts') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'contacts']
-                            : current.filter((t: string) => t !== 'contacts');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'contacts',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -273,15 +277,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('callback') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'callback']
-                            : current.filter((t: string) => t !== 'callback');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'callback',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -304,15 +305,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('list') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'list']
-                            : current.filter((t: string) => t !== 'list');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'list',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -335,15 +333,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('reply') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'reply']
-                            : current.filter((t: string) => t !== 'reply');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'reply',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">
@@ -366,15 +361,12 @@ export function PlatformConfigForm({
                           formData.messageTypes?.includes('ads') ?? false
                         }
                         onCheckedChange={(checked: boolean) => {
-                          const current = formData.messageTypes || [
-                            'text',
-                            'reaction',
-                            'media',
-                          ];
-                          const updated = checked
-                            ? [...current, 'ads']
-                            : current.filter((t: string) => t !== 'ads');
-                          onFormDataChange({ messageTypes: updated });
+                          handleCheckboxChange(
+                            'ads',
+                            checked,
+                            formData,
+                            onFormDataChange
+                          );
                         }}
                       />
                       <div className="flex-1">

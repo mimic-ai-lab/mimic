@@ -117,21 +117,21 @@ export function AdvancedSettings({
     language.name.toLowerCase().includes(languageSearch.toLowerCase())
   );
 
-  const handleTimezoneSearchChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+  // Generic search handler function
+  const handleSearchChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setSearch: React.Dispatch<React.SetStateAction<string>>
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    setTimezoneSearch(e.target.value);
+    setSearch(e.target.value);
   };
 
-  const handleLanguageSearchChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setLanguageSearch(e.target.value);
-  };
+  const handleTimezoneSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    handleSearchChange(e, setTimezoneSearch);
+
+  const handleLanguageSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    handleSearchChange(e, setLanguageSearch);
 
   const handleTimezoneSearchKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>

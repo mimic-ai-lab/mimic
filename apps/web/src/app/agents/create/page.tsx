@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Sparkles, Globe, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AgentTypeCard } from './components/agent-type-card';
@@ -14,6 +15,7 @@ import { agentTypes } from './data/agent-types';
 import { AgentType, Platform, FormData } from './types';
 
 export default function CreateAgentPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [selectedAgentType, setSelectedAgentType] = useState<AgentType | null>(
     null
@@ -56,7 +58,7 @@ export default function CreateAgentPage() {
       selectedPlatform,
       formData,
     });
-    window.location.href = '/agents';
+    router.push('/agents');
   };
 
   const handleBack = () => {
@@ -67,7 +69,7 @@ export default function CreateAgentPage() {
       setStep(1);
       setSelectedAgentType(null);
     } else {
-      window.location.href = '/agents';
+      router.push('/agents');
     }
   };
 

@@ -1,0 +1,120 @@
+import { AgentType } from '../types';
+
+export const agentTypes: AgentType[] = [
+    {
+        id: 'chat',
+        name: 'Chat Agent',
+        description: 'Simulate rich conversations across today’s most popular messaging platforms.',
+        icon: '/images/icons/chat-agent.png',
+        color: 'from-blue-500 to-purple-600',
+        features: ['WhatsApp', 'Slack', 'Teams', 'WebSocket', 'SMS', 'Email'],
+        preview: {
+            title: 'Conversational AI, Supercharged',
+            description:
+                'Bring your assistant to life across every channel. Mimic’s virtual users engage, react, and test your agent in ways real customers will—at scale and on-demand.',
+            features: [
+                'Cross-platform messaging simulation',
+                'Instant, real-world interaction patterns',
+                'Persona-driven conversations',
+                'Deep analytics & live insights',
+            ],
+            demo: 'Watch simulated users interact with your chat agent in real time.',
+        },
+        platforms: [
+            {
+                id: 'whatsapp',
+                name: 'WhatsApp',
+                icon: '/images/icons/whatsapp.png',
+                description: 'Deliver true-to-life WhatsApp events—webhooks, media, and replies—without touching the real API.',
+                features: ['Official API Schema', 'Instant Webhook Playback', 'Rich Media Simulation'],
+                demo: 'See your assistant navigate complex WhatsApp flows—no WhatsApp account needed.',
+            },
+            {
+                id: 'slack',
+                name: 'Slack',
+                icon: '/images/icons/slack.png',
+                description: 'Replicate Slack conversations—DMs, threads, and channel chatter—straight into your webhook.',
+                features: ['Event-API Fidelity', 'Channel & DM Coverage', 'Real-Time Notifications'],
+                demo: 'Stress-test workflows, commands, and notifications with virtual Slack users.',
+            },
+            {
+                id: 'teams',
+                name: 'Microsoft Teams',
+                icon: '/images/icons/teams.png',
+                description: 'Emulate Teams messaging and meetings with 100% accurate payloads delivered to your endpoint.',
+                features: ['Teams API Parity', 'Chat & Meeting Events', 'Seamless Integration'],
+                demo: 'Validate enterprise scenarios—calls, group chats, and meeting invites—without a Teams license.',
+            },
+            {
+                id: 'sms',
+                name: 'SMS',
+                icon: '/images/icons/sms.png',
+                description: 'Simulate global SMS traffic: inbound/outbound messages, delivery receipts, and status updates.',
+                features: ['Carrier-Grade API', 'Worldwide Delivery Simulation', 'Receipt & Status Events'],
+                demo: 'Run high-volume SMS campaigns and two-way flows—no phone numbers or carriers required.',
+            },
+            {
+                id: 'email',
+                name: 'Email',
+                icon: '/images/icons/email.png',
+                description: 'Orchestrate email interactions—SMTP, IMAP, templates, and auto-replies—entirely in your test harness.',
+                features: ['SMTP/IMAP Protocols', 'Template Injection', 'Automated Reply Simulation'],
+                demo: 'Ensure flawless onboarding, support tickets, and newsletters—without spinning up an inbox.',
+            },
+            {
+                id: 'websocket',
+                name: 'WebSocket',
+                icon: '/images/icons/websocket.png',
+                description: 'Drive custom, full-duplex WebSocket sessions with authentic message frames at scale.',
+                features: ['Bi-Directional Streams', 'Custom Payloads', 'Latency & Order Simulation'],
+                demo: 'Replay real-time data, chat, and events in a controlled environment—no socket server needed.',
+            },
+        ],
+    },
+    {
+        id: 'voice',
+        name: 'Voice Agent',
+        description: 'Bring lifelike, interactive phone conversations to your assistant testing.',
+        icon: '/images/icons/voice-agent.png',
+        color: 'from-orange-500 to-red-600',
+        features: ['Twilio', 'Custom Voice', 'Phone Systems'],
+        preview: {
+            title: 'Voice AI, Made Human',
+            description:
+                'Simulate realistic phone calls and natural voice interactions. Mimic’s voice agents test, interrupt, and engage just like real callers—so your assistant never misses a beat.',
+            features: [
+                'Natural conversation flows',
+                'Voice analytics & reporting',
+                'Full IVR and call routing simulation',
+                'Support for custom and legacy systems',
+            ],
+            demo: 'Experience interactive, high-fidelity voice testing with Mimic’s virtual callers.',
+        },
+        platforms: [
+            {
+                id: 'twilio',
+                name: 'Twilio Voice',
+                icon: '/images/icons/websocket.png',
+                description: 'Effortlessly test your assistant’s call flows with Twilio Voice integration.',
+                features: ['Twilio Voice API', 'Call Recording', 'IVR & DTMF Support'],
+                demo: 'Simulate incoming and outgoing calls, transfers, and voice commands.',
+            },
+            {
+                id: 'custom',
+                name: 'Custom Voice',
+                icon: '/images/icons/websocket.png',
+                description: 'Tailor Mimic’s voice engine to match your unique integration needs.',
+                features: ['Flexible API', 'Advanced Customization', 'Full Event Control'],
+                demo: 'Run fully customized call scenarios, from order tracking to support hotlines.',
+            },
+            {
+                id: 'phone',
+                name: 'Phone System',
+                icon: '/images/icons/websocket.png',
+                description: 'Connect with traditional phone systems for end-to-end telephony testing.',
+                features: ['PSTN Integration', 'Call Routing', 'Voicemail Simulation'],
+                demo: 'Validate how your agent handles real-world phone system workflows.',
+            },
+        ],
+    },
+];

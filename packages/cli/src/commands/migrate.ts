@@ -1,5 +1,7 @@
 import { Command } from 'commander';
 import { logger } from '../utils/logger';
+import { createDatabase, createPool, readSchema, testConnection, executeRawSql } from '../utils/database';
+import { validateDatabaseConfig } from '../utils/env';
 
 /**
  * Migration command options interface
@@ -48,6 +50,13 @@ export function migrateCommand(program: Command): void {
 async function handleMigration(options: MigrateCommandOptions): Promise<void> {
     logger.info('Starting database migration...');
 
+    // Validate database configuration
+    if (!validateDatabaseConfig()) {
+        logger.error('Database configuration not found. Please check your environment variables.');
+        logger.info('Required: DATABASE_URL or individual database environment variables');
+        process.exit(1);
+    }
+
     if (options.dryRun) {
         logger.info('Running in dry-run mode - no changes will be made');
         await performDryRun();
@@ -73,17 +82,27 @@ async function handleMigration(options: MigrateCommandOptions): Promise<void> {
 async function performDryRun(): Promise<void> {
     logger.info('Analyzing migration requirements...');
 
-    // Simulate migration analysis
-    await simulateMigrationAnalysis();
+    try {
+        const schema = readSchema();
+        const statements = parseSchemaStatements(schema);
 
-    const status: MigrationStatus = {
-        pending: 3,
-        completed: 0,
-        failed: 0,
-    };
+        const status: MigrationStatus = {
+            pending: statements.length,
+            completed: 0,
+            failed: 0,
+        };
 
-    displayMigrationStatus(status, true);
-    logger.success('Dry run completed - no changes made');
+        displayMigrationStatus(status, true);
+        logger.info('Schema statements to be executed:');
+        statements.forEach((stmt, index) => {
+            logger.info(`  ${index + 1}. ${stmt.substring(0, 50)}...`);
+        });
+
+        logger.success('Dry run completed - no changes made');
+    } catch (error) {
+        logger.error('Failed to analyze schema:', error);
+        process.exit(1);
+    }
 }
 
 /**
@@ -92,11 +111,22 @@ async function performDryRun(): Promise<void> {
 async function performReset(): Promise<void> {
     logger.warn('Dropping all database tables...');
 
-    // Simulate table dropping
-    await simulateTableDrop();
+    try {
+        const pool = createPool();
 
-    logger.success('Database reset completed');
-    logger.info('All tables have been dropped');
+        // Drop all tables
+        await executeRawSql(pool, 'DROP SCHEMA IF EXISTS public CASCADE');
+        await executeRawSql(pool, 'CREATE SCHEMA public');
+        await executeRawSql(pool, 'GRANT ALL ON SCHEMA public TO public');
+
+        await pool.end();
+
+        logger.success('Database reset completed');
+        logger.info('All tables have been dropped');
+    } catch (error) {
+        logger.error('Failed to reset database:', error);
+        process.exit(1);
+    }
 }
 
 /**
@@ -105,17 +135,71 @@ async function performReset(): Promise<void> {
 async function performMigration(): Promise<void> {
     logger.info('Running database migrations...');
 
-    // Simulate migration execution
-    await simulateMigrationExecution();
+    try {
+        // Test connection first
+        const isConnected = await testConnection();
+        if (!isConnected) {
+            logger.error('Cannot connect to database. Please check your configuration.');
+            process.exit(1);
+        }
 
-    const status: MigrationStatus = {
-        pending: 0,
-        completed: 3,
-        failed: 0,
-    };
+        const pool = createPool();
+        const schema = readSchema();
+        const statements = parseSchemaStatements(schema);
 
-    displayMigrationStatus(status, false);
-    logger.success('Migration completed successfully');
+        let completed = 0;
+        let failed = 0;
+
+        for (const statement of statements) {
+            try {
+                await executeRawSql(pool, statement);
+                completed++;
+                logger.debug('Executed statement successfully');
+            } catch (error) {
+                failed++;
+                logger.error('Failed to execute statement:', error);
+            }
+        }
+
+        await pool.end();
+
+        const status: MigrationStatus = {
+            pending: 0,
+            completed,
+            failed,
+        };
+
+        displayMigrationStatus(status, false);
+
+        if (failed > 0) {
+            logger.error('Migration completed with errors');
+            process.exit(1);
+        } else {
+            logger.success('Migration completed successfully');
+        }
+    } catch (error) {
+        logger.error('Migration failed:', error);
+        process.exit(1);
+    }
+}
+
+/**
+ * Parse schema SQL into individual statements
+ * @param schema - The schema SQL content
+ * @returns Array of SQL statements
+ */
+function parseSchemaStatements(schema: string): string[] {
+    // Remove comments and split by semicolons
+    const cleanSchema = schema
+        .replace(/--.*$/gm, '') // Remove single line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+        .trim();
+
+    return cleanSchema
+        .split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0)
+        .map(stmt => stmt + ';');
 }
 
 /**
@@ -132,31 +216,4 @@ function displayMigrationStatus(status: MigrationStatus, isDryRun: boolean): voi
     console.log(`  Completed:  ${status.completed}`);
     console.log(`  Failed:     ${status.failed}`);
     console.log();
-}
-
-/**
- * Simulate migration analysis (placeholder for actual implementation)
- */
-async function simulateMigrationAnalysis(): Promise<void> {
-    // Simulate some processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    logger.debug('Migration analysis completed');
-}
-
-/**
- * Simulate table dropping (placeholder for actual implementation)
- */
-async function simulateTableDrop(): Promise<void> {
-    // Simulate some processing time
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    logger.debug('Tables dropped successfully');
-}
-
-/**
- * Simulate migration execution (placeholder for actual implementation)
- */
-async function simulateMigrationExecution(): Promise<void> {
-    // Simulate some processing time
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    logger.debug('Migrations executed successfully');
 } 

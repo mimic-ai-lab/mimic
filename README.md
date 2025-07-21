@@ -10,18 +10,35 @@
 
 ## 🎯 What is Mimic?
 
-Mimic is a **source-available** platform that lets developers **stress-test** their conversational or voice AI agents with swarms of realistic, LLM-driven "virtual users."
+Mimic is an immersive testing arena where lifelike virtual personas interact with your chat-, web-socket-, and voice-based assistants exactly as real people would—only faster, louder, and at limitless scale.
 
-Point Mimic at your WhatsApp bot, WebSocket server, or voice IVR, define a few persona prompts, and Mimic spins up hundreds of simulated parents, customers, or gamers that chat, call, and push your agent to its limits—so you can find edge-cases before real customers do.
+It’s where product managers, conversational designers, and QA teams watch their assistants navigate everything from mundane small talk to once-in-a-lifetime emergencies, uncovering hidden flaws long before launch day.
 
-### 🚀 Key Features
+## 🚀 Key Features
 
-- **🔄 Multi-Protocol Support**: WhatsApp, Voice IVR, WebSocket, REST APIs
-- **🎭 Dynamic Personas**: LLM-driven virtual users with realistic behaviors
-- **📊 Real-time Monitoring**: Live dashboard for session tracking and analytics
-- **⚡ Scalable Architecture**: Built with Fastify, Next.js, and BullMQ
-- **🔌 Plugin System**: Extensible adapter system for custom protocols
-- **🛠️ Developer-Friendly**: TypeScript, monorepo, hot-reload development
+- **Persona Swarms**  
+  Instantly spin up hundreds—or thousands—of synthetic users, each with unique backstories, emotional tones, and conversation quirks. Mix and match demographics, languages, and typing styles (emoji-heavy, typo-prone, rapid-fire, etc.) to see how your assistant handles the glorious unpredictability of real human variety.
+
+- **Voice Agents & IVR**  
+  Run end-to-end phone calls with crystal-clear speech, silence detection, cross-talk, and interruptions. Test wake-word timing, DTMF menus, and caller patience thresholds—exposing awkward pauses, misrecognitions, and IVR dead ends before your customers do.
+
+- **Time-Travel Scenarios**  
+  Accelerate a user’s life arc—simulate months or years in minutes, replay events on demand, and verify your assistant adapts to long-term changes, remembers promises, and evolves with the user.
+
+- **Stress & Spike Testing**  
+  Ramp your test bed from calm Monday mornings to holiday-season chaos with a click. Adjustable think-time jitter, concurrency, and burst profiles let you confirm backend resilience and latency safeguards under real-world surges.
+
+- **Edge-Case Discovery**  
+  Inject garbled audio, code-switched language, sarcasm, or double-negatives. Persona “troublemakers” push your assistant off script to expose hidden loops and “that should never happen” moments—because they always do.
+
+- **Insightful Dashboard**  
+  Get live transcripts, heat maps of slow responses, and persona-by-persona success rates. Export every session for deeper analysis in your BI stack, transforming conversations into actionable data.
+
+- **Plugin-Ready & Extensible**  
+  Add new channels—Slack, Telegram, SMS—via drop-in adapters. Create custom persona generators or analytics panels in TypeScript. The community (or your team) can extend Mimic without waiting for core releases.
+
+- **Fair-Code Freedom**  
+  Source available, free for personal and internal company use. Transparent roadmap, welcoming PRs—build trust with stakeholders while protecting your commercial edge.
 
 ## 🏗️ Architecture
 
@@ -136,21 +153,20 @@ yarn clean
 
 ## 🎯 Use Cases
 
-### 1. **Customer Service Bot Testing**
+1. **Pre-launch Certification**  
+   Can your retail assistant handle 2,000 shoppers asking for return labels at once? Mimic lets you find out—before launch day.
 
-Test your WhatsApp customer service bot with hundreds of realistic customer personas, each with different pain points and communication styles.
+2. **Regression Testing in CI**  
+   Every pull-request spins a mini swarm—fail the build if conversation quality drops.
 
-### 2. **Voice IVR Stress Testing**
+3. **Localization QA**  
+   Feed the same scenario through en-GB, hi-IN, and es-MX personas to catch cultural slip-ups and ensure your assistant is truly global-ready.
 
-Simulate call center volumes with diverse caller personas to ensure your voice system handles edge cases gracefully.
+4. **Voice Prompt Tuning**  
+   Measure how many callers bail out after hearing a 30-second disclaimer, then rewrite & retest instantly.
 
-### 3. **Gaming Chat Bot Validation**
-
-Test your Discord or Twitch chat bot with various gamer personas, from casual players to hardcore enthusiasts.
-
-### 4. **E-commerce Support Simulation**
-
-Create personas for different customer types (first-time buyers, returns, complaints) to test your support automation.
+5. **Longitudinal Behavior Audits**  
+   Time-travel five simulated years: did your wellness assistant keep its long-term diet advice consistent?
 
 ## 🤝 Contributing
 

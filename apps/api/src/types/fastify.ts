@@ -5,6 +5,8 @@
  * and request/response properties used throughout the application.
  */
 import { type EnvConfig } from './env';
+import { Kysely } from 'kysely';
+import { Database } from '@mimic/core';
 
 // Extend Fastify types to include env decorator and response helpers
 declare module 'fastify' {
@@ -12,8 +14,10 @@ declare module 'fastify' {
         env: EnvConfig;
         success: (data: any, pagination?: any) => any;
         error: (code: string, message: string, details?: any) => any;
+        pg: Kysely<Database>;
     }
     interface FastifyRequest {
         env: EnvConfig;
+        pg: Kysely<Database>;
     }
 } 

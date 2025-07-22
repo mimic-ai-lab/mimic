@@ -65,7 +65,7 @@ CREATE TABLE
         created_by UUID NOT NULL REFERENCES users (id),
         -- Basic info
         name VARCHAR(255) NOT NULL,
-        description TEXT,
+        description TEXT NOT NULL,
         agent_type VARCHAR(50) NOT NULL CHECK (agent_type IN ('chat', 'voice')),
         platform VARCHAR(100) NOT NULL, -- 'whatsapp', 'slack', 'teams', 'sms', 'email', 'websocket'
         -- Platform-specific config (JSON)

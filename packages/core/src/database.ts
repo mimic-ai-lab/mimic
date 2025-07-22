@@ -39,13 +39,14 @@ export interface TeamsTable {
 export interface UsersTable {
     id: string;
     clerk_id: string;
-    email: string;
+    email: string | null;
     first_name: string | null;
     last_name: string | null;
-    avatar_url: string | null;
+    image_url: string | null;
     created_at: Date;
     updated_at: Date;
-    deleted_at: Date | null;
+    last_sign_in_at: Date | null;
+    is_active: boolean;
 }
 
 export interface TeamMembersTable {

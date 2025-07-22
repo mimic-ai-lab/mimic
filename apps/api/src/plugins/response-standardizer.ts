@@ -32,7 +32,7 @@ const responseStandardizerPlugin: FastifyPluginAsync = async (fastify: FastifyIn
     fastify.addHook('onSend', async (request, reply, payload) => {
         // Skip if payload is already formatted (like our error responses)
         if (payload && typeof payload === 'object' &&
-            ('data' in payload || 'error' in payload)) {
+            ('data' in payload || 'error' in payload || 'ok' in payload)) {
             return payload;
         }
 

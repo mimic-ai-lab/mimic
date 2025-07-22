@@ -122,12 +122,11 @@ The webhook implements comprehensive error handling with structured error respon
 
 ### Signature Verification
 
-Webhook signature verification is implemented using Svix but can be disabled for testing:
+Webhook signature verification is implemented using Svix and is enabled by default:
 
 ```typescript
-// TODO: Enable signature verification in production
-// const webhook = new Webhook(secret);
-// event = webhook.verify(payload, headers);
+const webhook = new Webhook(secret);
+event = webhook.verify(payload, headers);
 ```
 
 ## Database Operations

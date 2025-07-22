@@ -41,6 +41,14 @@ import { initializeDatabase, closeDatabase } from '@/lib';
 const fastify = Fastify({
     logger: {
         level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+        transport: process.env.NODE_ENV === 'development' ? {
+            target: '@mgcrea/pino-pretty-compact',
+            options: {
+                colorize: true,
+                translateTime: 'HH:MM:ss Z',
+                ignore: 'pid,hostname'
+            }
+        } : undefined
     },
     disableRequestLogging: true, // Let custom logger handle request logging
 });

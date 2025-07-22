@@ -18,7 +18,7 @@ export default async function setupRoutes(fastify: FastifyInstance): Promise<voi
     fastify.register(AgentRoutes);
 
     // Register webhook routes
-    fastify.register(ClerkWebhookRoutes, { prefix: '/webhooks/clerk' });
+    fastify.register(ClerkWebhookRoutes);
 
     // Register additional routes here as the API grows
 }

@@ -57,7 +57,7 @@ export async function handleClerkWebhook(request: FastifyRequest, reply: Fastify
         }
 
         // Get webhook secret from environment
-        const secret = request.server.env.CLERK_WEBHOOK_SECRET;
+        const secret = process.env.CLERK_WEBHOOK_SECRET;
         request.log.debug('🔑 Webhook secret check', { hasSecret: !!secret });
 
         if (!secret) {
@@ -75,25 +75,24 @@ export async function handleClerkWebhook(request: FastifyRequest, reply: Fastify
         const payload = JSON.stringify(request.body);
         request.log.debug('📦 Webhook payload prepared', { payloadLength: payload.length });
 
-        // TODO: Enable signature verification in production
-        // const webhook = new Webhook(secret);
-        // try {
-        //     event = webhook.verify(payload, {
-        //         'svix-id': svixId,
-        //         'svix-timestamp': svixTimestamp,
-        //         'svix-signature': svixSignature,
-        //     });
-        // } catch (err) {
-        //     request.log.error('❌ Webhook signature verification failed', { error: err });
-        //     return reply.status(401).send({
-        //         ok: false,
-        //         error: 'Invalid webhook signature',
-        //         code: 'INVALID_SIGNATURE'
-        //     });
-        // }
-
-        let event: any = request.body;
-        request.log.debug('⏭️ Skipping signature verification for testing');
+        // Verify webhook signature using Svix
+        const webhook = new Webhook(secret);
+        let event: any;
+        try {
+            event = webhook.verify(payload, {
+                'svix-id': svixId,
+                'svix-timestamp': svixTimestamp,
+                'svix-signature': svixSignature,
+            });
+            request.log.debug('✅ Webhook signature verified successfully');
+        } catch (err) {
+            request.log.error('❌ Webhook signature verification failed', { error: err });
+            return reply.status(401).send({
+                ok: false,
+                error: 'Invalid webhook signature',
+                code: 'INVALID_SIGNATURE'
+            });
+        }
 
         // Parse and validate the event
         request.log.debug('📋 Raw webhook event', { event });

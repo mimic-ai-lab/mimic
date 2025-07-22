@@ -8,6 +8,7 @@ import { FastifyInstance } from 'fastify';
 
 import HealthRoutes from '@/routes/health';
 import AgentRoutes from '@/routes/agents';
+import ClerkWebhookRoutes from '@/routes/webhooks/clerk';
 
 export default async function setupRoutes(fastify: FastifyInstance): Promise<void> {
     // Register health check routes (GET /health)
@@ -15,6 +16,9 @@ export default async function setupRoutes(fastify: FastifyInstance): Promise<voi
 
     // Register agent routes
     fastify.register(AgentRoutes);
+
+    // Register webhook routes
+    fastify.register(ClerkWebhookRoutes, { prefix: '/webhooks/clerk' });
 
     // Register additional routes here as the API grows
 }

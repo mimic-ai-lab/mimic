@@ -9,8 +9,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 export default async function HealthRoutes(fastify: FastifyInstance): Promise<void> {
     // Basic health check endpoint
     fastify.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
-        // Use Fastify's success helper for standardized response
-        return fastify.success({
+        return reply.send({
             status: 'healthy',
             timestamp: new Date().toISOString(),
             uptime: process.uptime(),
@@ -31,8 +30,7 @@ export default async function HealthRoutes(fastify: FastifyInstance): Promise<vo
             }
         };
 
-        // Use Fastify's success helper for standardized response
-        return fastify.success(health);
+        return reply.send(health);
     });
 
     // Example of error handling

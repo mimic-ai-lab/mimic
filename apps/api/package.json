@@ -16,6 +16,7 @@
   "dependencies": {
     "@clerk/fastify": "^2.4.10",
     "@fastify/cors": "^11.0.1",
+    "@fastify/rate-limit": "^10.3.0",
     "@fastify/websocket": "^11.2.0",
     "@mgcrea/pino-pretty-compact": "^1.4.2",
     "@mimic/core": "workspace:*",
@@ -23,9 +24,12 @@
     "@types/node": "^24.0.14",
     "fastify": "^5.4.0",
     "fastify-plugin": "^5.0.1",
+    "kolorist": "^1.8.0",
     "kysely": "^0.28.3",
     "pg": "^8.16.3",
     "resend": "^4.7.0",
+    "svix": "^1.69.0",
+    "uuid": "^11.1.0",
     "zod": "^4.0.5",
     "zod-to-json-schema": "^3.22.4"
   },
@@ -33,6 +37,7 @@
     "@types/jest": "^30.0.0",
     "@types/pg": "^8",
     "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
     "jest": "^30.0.4",
     "supertest": "^7.0.0",
     "ts-jest": "^29.4.0",

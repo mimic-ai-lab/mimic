@@ -18,6 +18,9 @@ export const envSchema = z.object({
 
     // Sentry
     SENTRY_DSN: z.string().optional(),
+
+    // Clerk Webhooks
+    CLERK_WEBHOOK_SECRET: z.string(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>; 

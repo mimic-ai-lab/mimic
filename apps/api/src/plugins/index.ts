@@ -12,36 +12,37 @@ import responseStandardizer from './response-standardizer';
 import { clerkPlugin } from '@clerk/fastify'
 
 export default async function setupPlugins(fastify: FastifyInstance): Promise<void> {
-    // Register environment validation plugin first
-    fastify.register(envPlugin);
+    // Register PostgreSQL plugin after environment is loaded
+    fastify.register(envPlugin).after(() => {
+        fastify.register(postgresPlugin, {
+            url: fastify.env.DATABASE_URL,
+            pool: {
+                min: 2,
+                max: 10,
+                idleTimeoutMillis: 30000,
+            },
+        });
 
-    // Register PostgreSQL plugin
-    fastify.register(postgresPlugin, {
-        url: fastify.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 10,
-            idleTimeoutMillis: 30000,
-        },
+
+        // Register response standardizer plugin
+        fastify.register(responseStandardizer);
+
+        // Configure CORS policies for Better Auth
+        fastify.register(cors, {
+            origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            allowedHeaders: [
+                "Content-Type",
+                "Authorization",
+                "X-Requested-With"
+            ],
+            credentials: true,
+            maxAge: 86400
+        });
+
+        fastify.register(clerkPlugin)
     });
 
-    // Register response standardizer plugin
-    fastify.register(responseStandardizer);
-
-    // Configure CORS policies for Better Auth
-    fastify.register(cors, {
-        origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: [
-            "Content-Type",
-            "Authorization",
-            "X-Requested-With"
-        ],
-        credentials: true,
-        maxAge: 86400
-    });
-
-    fastify.register(clerkPlugin)
 
     // Register additional plugins here as needed
 }

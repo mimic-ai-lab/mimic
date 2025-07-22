@@ -7,7 +7,7 @@
 import { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import envPlugin from './env';
-import postgresPlugin from './postgress';
+import postgresPlugin from './postgres';
 import responseStandardizer from './response-standardizer';
 import { clerkPlugin } from '@clerk/fastify'
 

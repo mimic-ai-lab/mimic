@@ -1,0 +1,9 @@
+name: 'WhatsApp Bot'
+description: 'WhatsApp agent with invalid configuration'
+agent_type: 'chat'
+platform: 'whatsapp'
+platform_config:
+  webhook_url: 'not-a-url'
+  display_phone_number: 'invalid-phone'
+  phone_number_id: ''
+  graph_api_version: 'invalid-version'

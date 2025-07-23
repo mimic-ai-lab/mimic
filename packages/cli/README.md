@@ -4,6 +4,7 @@ A professional command-line interface for the Mimic agent simulation platform. B
 
 ## Features
 
+- **Agent Management**: Validate, deploy, and manage agent configurations
 - **Database Management**: Migrate and manage database schemas
 - **Configuration Management**: Set, view, and initialize configuration
 - **Professional Logging**: Colored output with different log levels
@@ -37,6 +38,86 @@ mimic --version
 
 # Enable debug logging
 mimic --debug <command>
+```
+
+### Agent Management
+
+The CLI provides comprehensive agent management capabilities for validating and deploying agent configurations.
+
+#### Validate Agent Configuration
+
+```bash
+# Basic validation
+mimic agent validate agent.yaml
+
+# Verbose validation with detailed output
+mimic agent validate agent.yaml --verbose
+
+# Show help for agent commands
+mimic agent --help
+```
+
+**Agent YAML Structure:**
+
+```yaml
+# Required fields
+name: 'Customer Support Bot'
+description: 'AI agent for handling customer inquiries'
+agent_type: 'chat' # or "voice"
+platform: 'whatsapp' # platform-specific
+platform_config:
+  # Platform-specific configuration
+  webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+  display_phone_number: '+1234567890'
+  phone_number_id: '2331313123213'
+  graph_api_version: 'v23.0'
+
+# Optional fields
+id: '550e8400-e29b-41d4-a716-446655440000' # UUID for updates
+version: '1.0.0' # Auto-generated if not provided
+```
+
+**Supported Platforms:**
+
+- **Chat Agents:**
+  - `whatsapp` - WhatsApp Business API
+  - `slack` - Slack Bot API
+  - `teams` - Microsoft Teams
+  - `sms` - SMS messaging
+  - `email` - Email integration
+  - `websocket` - WebSocket connections
+
+- **Voice Agents:**
+  - `twilio` - Twilio Voice API
+  - `custom` - Custom voice integration
+  - `phone` - Traditional phone systems
+
+**Validation Features:**
+
+- ✅ Schema validation (required fields, data types)
+- ✅ Platform compatibility checking
+- ✅ Platform-specific configuration validation
+- ✅ URL format validation
+- ✅ Phone number format validation
+- ✅ UUID format validation
+- ⚠️ Smart warnings for missing optional fields
+
+**Example Validation Output:**
+
+```bash
+$ mimic agent validate agent.yaml --verbose
+✅ Agent configuration is valid!
+📋 Validation Summary:
+   - Basic schema: ✅ Valid
+   - Platform compatibility: ✅ Valid
+   - Platform configuration: ✅ Valid
+
+# With errors:
+❌ Agent configuration is invalid!
+Errors:
+   1. Platform 'invalid_platform' is not valid for agent type 'chat'
+   2. Webhook URL must be a valid URL
+   3. Phone number must be in international format
 ```
 
 ### Database Management
@@ -77,7 +158,8 @@ src/
 ├── commands/             # Command implementations
 │   ├── help.ts          # Help command
 │   ├── migrate.ts       # Database migration
-│   └── config.ts        # Configuration management
+│   ├── config.ts        # Configuration management
+│   └── agent.ts         # Agent management
 └── utils/
     └── logger.ts        # Logging utility
 ```
@@ -154,6 +236,21 @@ Each command follows a consistent pattern:
 3. **Error Handling**: Wrap command logic in try-catch blocks
 4. **Logging**: Use the logger utility for consistent output
 5. **Validation**: Validate inputs and provide helpful error messages
+
+### Agent Validation Architecture
+
+The agent validation system uses a layered approach:
+
+1. **Schema Validation**: Zod schemas for basic structure validation
+2. **Platform Compatibility**: Ensures platform matches agent type
+3. **Platform-Specific Validation**: Custom validators for each platform
+4. **Warning System**: Provides helpful suggestions for optional fields
+
+**Validation Flow:**
+
+```
+YAML File → Parse → Schema Validation → Platform Check → Platform Config → Result
+```
 
 ### Logging
 

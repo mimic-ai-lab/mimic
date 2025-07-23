@@ -1,0 +1,9 @@
+name: 'Invalid Bot'
+description: 'This has invalid configuration'
+agent_type: 'chat'
+platform: 'invalid_platform'
+platform_config:
+  webhook_url: 'not-a-url'
+  display_phone_number: 'invalid-phone'
+  phone_number_id: ''
+  graph_api_version: 'invalid-version'

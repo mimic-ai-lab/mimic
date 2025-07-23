@@ -1,0 +1,157 @@
+# Server Architecture & Code Organization
+
+## Project Structure
+
+This is a Fastify-based Node.js API server with TypeScript. The main entry point is [apps/api/src/server.ts](mdc:apps/api/src/server.ts), which sets up the server and registers plugins and routes.
+
+### Core Files
+
+- **Entry Point**: [apps/api/src/server.ts](mdc:apps/api/src/server.ts) - Main server configuration and startup
+- **Plugin Setup**: [apps/api/src/plugins/index.ts](mdc:apps/api/src/plugins/index.ts) - Centralized plugin registration
+- **Route Setup**: [apps/api/src/routes/index.ts](mdc:apps/api/src/routes/index.ts) - Centralized route registration
+
+### Directory Structure
+
+```
+apps/api/src/
+├── plugins/           # Fastify plugins and middleware
+│   ├── index.ts      # Plugin registration orchestrator
+│   ├── env.ts        # Environment configuration
+│   ├── database.ts   # Database connection
+│   └── logger.ts     # Logging configuration
+├── routes/           # API route handlers
+│   ├── index.ts      # Route registration
+│   ├── health/       # Health check endpoints
+│   ├── agents/       # Agent management endpoints
+│   └── webhooks/     # Webhook handlers
+├── types/            # TypeScript type definitions
+│   └── fastify.ts    # Fastify module extensions
+└── server.ts         # Main server file
+```
+
+## Code Organization Patterns
+
+### 1. Plugin Architecture
+
+- All plugins are registered through [apps/api/src/plugins/index.ts](mdc:apps/api/src/plugins/index.ts)
+- Environment plugin ([apps/api/src/plugins/env.ts](mdc:apps/api/src/plugins/env.ts)) must be registered first
+- Use `fastify-plugin` for plugins that need to be available globally
+- Type declarations are separated into [apps/api/src/types/fastify.ts](mdc:apps/api/src/types/fastify.ts)
+
+### 2. Environment Configuration
+
+- Environment variables are validated using Zod schemas in [apps/api/src/plugins/env.ts](mdc:apps/api/src/plugins/env.ts)
+- Only include environment variables that are actually used in the codebase
+- Environment config is available on both `fastify.env` and `request.env`
+- Use proper defaults and optional fields where appropriate
+
+### 3. Route Organization
+
+- Routes are organized by feature/domain in subdirectories
+- Each route module exports handlers and registers them with Fastify
+- Use TypeScript for request/response typing
+- Health check routes are separated in [apps/api/routes/health/](mdc:apps/api/routes/health/)
+
+### 4. Database Schema
+
+The database schema is defined in [apps/api/src/lib/schema.sql](mdc:apps/api/src/lib/schema.sql):
+
+```sql
+-- Agents table
+CREATE TABLE agents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    created_by UUID NOT NULL REFERENCES users(id),
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    agent_type VARCHAR(50) NOT NULL CHECK (agent_type IN ('chat', 'voice')),
+    platform VARCHAR(100) NOT NULL,
+    platform_config JSONB NOT NULL DEFAULT '{}',
+    status VARCHAR(50) DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'paused', 'archived')),
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+### 5. Agent Management
+
+Agent-related functionality is organized in [apps/api/src/routes/agents/](mdc:apps/api/src/routes/agents/):
+
+- **Schema**: [apps/api/src/routes/agents/schema.ts](mdc:apps/api/src/routes/agents/schema.ts) - Zod schemas for validation
+- **Utils**: [apps/api/src/routes/agents/utils.ts](mdc:apps/api/src/routes/agents/utils.ts) - Database operations
+- **Routes**: [apps/api/src/routes/agents/index.ts](mdc:apps/api/src/routes/agents/index.ts) - Route handlers
+
+### 6. API Documentation
+
+OpenAPI specification is maintained in [apps/api/apispec.yaml](mdc:apps/api/apispec.yaml):
+
+- Version 3.0.3 for compatibility with Postman and other tools
+- Comprehensive endpoint documentation
+- Proper schema definitions and examples
+- Postman workspace integration
+
+### 7. Error Handling
+
+- Sentry integration for error tracking in [apps/api/src/server.ts](mdc:apps/api/src/server.ts)
+- Proper error logging and monitoring
+- Use Fastify's built-in error handling mechanisms
+
+### 8. Logging
+
+- Pino-based logging with pretty formatting
+- Configurable log levels via `LOG_LEVEL` environment variable
+- Request logging can be disabled for specific paths
+- Custom ignore logic for certain requests
+
+## Development Guidelines
+
+### Adding New Plugins
+
+1. Create the plugin file in `apps/api/src/plugins/`
+2. Use `fastify-plugin` if the plugin needs global access
+3. Register it in [apps/api/src/plugins/index.ts](mdc:apps/api/src/plugins/index.ts)
+4. Add any new environment variables to [apps/api/src/plugins/env.ts](mdc:apps/api/src/plugins/env.ts)
+
+### Adding New Routes
+
+1. Create route handlers in `apps/api/src/routes/`
+2. Group related routes in subdirectories
+3. Register routes in [apps/api/src/routes/index.ts](mdc:apps/api/src/routes/index.ts)
+4. Use proper TypeScript typing for request/response objects
+
+### Environment Variables
+
+- Always validate new environment variables with Zod
+- Provide sensible defaults where possible
+- Mark optional variables with `.optional()`
+- Use transformers for type conversion (e.g., `transform(Number)`)
+
+### Type Safety
+
+- Extend Fastify types in [apps/api/src/types/fastify.ts](mdc:apps/api/src/types/fastify.ts)
+- Use proper TypeScript interfaces for request/response objects
+- Leverage Zod for runtime validation
+
+## Key Dependencies
+
+- **Fastify**: Web framework
+- **Zod**: Schema validation
+- **PostgreSQL**: Database (via Kysely)
+- **Redis**: Caching/sessions
+- **Sentry**: Error tracking
+- **PostHog**: Analytics
+
+## Server Configuration
+
+- Default port: 3000 (configurable via `PORT` env var)
+- CORS enabled with permissive settings
+- WebSocket support via `@fastify/websocket`
+- Form body parsing enabled
+- Request logging with custom ignore patterns
+
+- CORS enabled with permissive settings
+- WebSocket support via `@fastify/websocket`
+- Form body parsing enabled
+- Request logging with custom ignore patterns

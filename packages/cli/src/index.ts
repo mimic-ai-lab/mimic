@@ -6,6 +6,7 @@ import { version } from '../package.json';
 import { helpCommand } from './commands/help';
 import { migrateCommand } from './commands/migrate';
 import { configCommand } from './commands/config';
+import { agentCommand } from './commands/agent';
 import { logger } from './utils/logger';
 
 // Initialize the CLI program
@@ -77,6 +78,7 @@ program
 helpCommand(program);
 migrateCommand(program);
 configCommand(program);
+agentCommand(program);
 
 // Global error handlers for uncaught exceptions
 process.on('uncaughtException', (error: Error) => {

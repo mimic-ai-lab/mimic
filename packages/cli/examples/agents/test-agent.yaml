@@ -1,0 +1,9 @@
+name: 'Customer Support Bot'
+description: 'AI agent for handling customer inquiries and support tickets'
+agent_type: 'chat'
+platform: 'whatsapp'
+platform_config:
+  webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+  display_phone_number: '+1234567890'
+  phone_number_id: '2331313123213'
+  graph_api_version: 'v23.0'

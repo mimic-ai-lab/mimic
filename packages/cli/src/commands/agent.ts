@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { z } from 'zod';
 import chalk from 'chalk';
+import yaml from 'js-yaml';
 import { logger } from '../utils/logger';
 
 // Agent YAML validation schema
@@ -74,7 +75,6 @@ async function validateAgentYaml(filePath: string): Promise<{ valid: boolean; er
     try {
         // Read and parse YAML file
         const fileContent = readFileSync(filePath, 'utf8');
-        const yaml = await import('js-yaml');
         const agentConfig = yaml.load(fileContent);
 
         // Validate basic schema

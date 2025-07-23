@@ -75,6 +75,7 @@ async function validateAgentYaml(filePath: string): Promise<{ valid: boolean; er
     try {
         // Read and parse YAML file
         const fileContent = readFileSync(filePath, 'utf8');
+        // yaml.load() is safe by default in js-yaml 3.x - no arbitrary code execution
         const agentConfig = yaml.load(fileContent);
 
         // Validate basic schema

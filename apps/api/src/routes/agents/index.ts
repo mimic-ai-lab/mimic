@@ -9,6 +9,7 @@ import {
     handlePauseAgent,
     handleArchiveAgent
 } from './handlers';
+import { requireAuth } from '@/plugins/auth';
 import {
     CreateAgentRequestJsonSchema,
     UpdateAgentRequestJsonSchema,
@@ -108,6 +109,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             querystring: ListAgentsQueryJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleListAgents
     });
 
@@ -152,6 +154,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             body: CreateAgentRequestJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleCreateAgent
     });
 
@@ -189,6 +192,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             params: AgentIdParamJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleGetAgent
     });
 
@@ -229,6 +233,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
             params: AgentIdParamJsonSchema,
             body: UpdateAgentRequestJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleUpdateAgent
     });
 
@@ -257,6 +262,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             params: AgentIdParamJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleDeleteAgent
     });
 
@@ -288,6 +294,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             params: AgentIdParamJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleActivateAgent
     });
 
@@ -319,6 +326,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             params: AgentIdParamJsonSchema
         },
+        preHandler: requireAuth,
         handler: handlePauseAgent
     });
 
@@ -350,6 +358,7 @@ export default async function AgentRoutes(fastify: FastifyInstance): Promise<voi
         schema: {
             params: AgentIdParamJsonSchema
         },
+        preHandler: requireAuth,
         handler: handleArchiveAgent
     });
 } 

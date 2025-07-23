@@ -19,6 +19,10 @@ export const envSchema = z.object({
     // Sentry
     SENTRY_DSN: z.string().optional(),
 
+    // Clerk Authentication
+    CLERK_PUBLISHABLE_KEY: z.string(),
+    CLERK_SECRET_KEY: z.string(),
+
     // Clerk Webhooks
     CLERK_WEBHOOK_SECRET: z.string(),
 });

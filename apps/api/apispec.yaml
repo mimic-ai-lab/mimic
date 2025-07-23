@@ -1,0 +1,998 @@
+openapi: 3.0.3
+info:
+  title: Mimic API
+  description: |
+    API for the Mimic AI platform - a multi-tenant AI agent management system.
+
+    ## Authentication
+    All protected endpoints require Clerk authentication. Include the `Authorization` header with a valid Clerk session token.
+
+    ## Rate Limiting
+    API requests are rate limited to ensure fair usage.
+
+    ## Error Handling
+    All errors follow a consistent format with error codes and details.
+  version: '1.0.0'
+  contact:
+    name: 'Mimic AI Support'
+    email: 'hello@mimicai.co'
+  license:
+    name: 'MIT'
+    url: 'https://opensource.org/licenses/MIT'
+
+servers:
+  - url: 'http://localhost:4000'
+    description: 'Development server'
+  - url: 'https://api.mimicai.co'
+    description: 'Production server'
+
+security:
+  - ClerkAuth: []
+
+paths:
+  # Health Check Endpoints
+  /health:
+    get:
+      summary: 'Health Check'
+      description: 'Check the health status of the API server'
+      tags:
+        - Health
+      responses:
+        '200':
+          description: 'Server is healthy'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                  services:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                      auth:
+                        type: string
+                      redis:
+                        type: string
+              example:
+                ok: true
+                status: 'healthy'
+                timestamp: '2024-01-15T10:30:00Z'
+                version: '1.0.0'
+                services:
+                  database: 'connected'
+                  auth: 'configured'
+                  redis: 'connected'
+
+  # Webhook Endpoints
+  /webhooks/clerk:
+    post:
+      summary: 'Clerk Webhook'
+      description: |
+        Handle Clerk webhook events for user synchronization.
+
+        This endpoint receives webhook events from Clerk when users are created, updated, or deleted.
+        It synchronizes user data with the local database.
+      tags:
+        - Webhooks
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  description: 'User data from Clerk'
+                  properties:
+                    id:
+                      type: string
+                    email_addresses:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          email_address:
+                            type: string
+                          id:
+                            type: string
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    created_at:
+                      type: number
+                    updated_at:
+                      type: number
+                object:
+                  type: string
+                type:
+                  type: string
+                  enum: ['user.created', 'user.updated', 'user.deleted']
+                timestamp:
+                  type: number
+                instance_id:
+                  type: string
+            example:
+              data:
+                id: 'user_2abc123def456'
+                email_addresses:
+                  - email_address: 'john.doe@example.com'
+                    id: 'idn_2abc123def456'
+                first_name: 'John'
+                last_name: 'Doe'
+                created_at: 1642234567
+                updated_at: 1642234567
+              object: 'event'
+              type: 'user.created'
+              timestamp: 1642234567
+              instance_id: 'clerk_instance_123'
+      responses:
+        '200':
+          description: 'Webhook processed successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  message:
+                    type: string
+                  eventType:
+                    type: string
+                  userId:
+                    type: string
+                  processingTimeMs:
+                    type: number
+              example:
+                ok: true
+                message: 'Successfully processed user.created'
+                eventType: 'user.created'
+                userId: 'user_2abc123def456'
+                processingTimeMs: 45
+        '400':
+          description: 'Invalid webhook payload'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 'Invalid webhook signature'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /webhooks/clerk/health:
+    get:
+      summary: 'Webhook Health Check'
+      description: 'Check the health status of the Clerk webhook endpoint'
+      tags:
+        - Webhooks
+        - Health
+      security: []
+      responses:
+        '200':
+          description: 'Webhook service is healthy'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  status:
+                    type: string
+                  checks:
+                    type: object
+                    properties:
+                      endpoint:
+                        type: boolean
+                      database:
+                        type: boolean
+                      environment:
+                        type: boolean
+                      timestamp:
+                        type: string
+                        format: date-time
+                  service:
+                    type: string
+                  version:
+                    type: string
+              example:
+                ok: true
+                status: 'healthy'
+                checks:
+                  endpoint: true
+                  database: true
+                  environment: true
+                  timestamp: '2024-01-15T10:30:00Z'
+                service: 'clerk-webhook'
+                version: '1.0.0'
+
+  # Agent Management Endpoints
+  /agents:
+    get:
+      summary: 'List Agents'
+      description: |
+        Retrieve a paginated list of agents with optional filtering.
+
+        Supports cursor-based pagination and filtering by status, agent type, platform, and team.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: 'Number of items per page (max 100)'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: nextToken
+          in: query
+          description: 'Cursor for pagination (base64 encoded)'
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: 'Filter by agent status'
+          required: false
+          schema:
+            type: string
+            enum: [draft, active, paused, archived]
+        - name: agent_type
+          in: query
+          description: 'Filter by agent type'
+          required: false
+          schema:
+            type: string
+            enum: [chat, voice]
+        - name: platform
+          in: query
+          description: 'Filter by platform'
+          required: false
+          schema:
+            type: string
+        - name: team_id
+          in: query
+          description: 'Filter by team ID'
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'List of agents retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      agents:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Agent'
+                      nextToken:
+                        type: string
+                        description: 'Cursor for next page'
+                      hasMore:
+                        type: boolean
+                        description: 'Whether there are more results'
+              example:
+                ok: true
+                data:
+                  agents:
+                    - id: '550e8400-e29b-41d4-a716-446655440001'
+                      team_id: '550e8400-e29b-41d4-a716-446655440000'
+                      created_by: 'user_2abc123def456'
+                      name: 'Customer Support Bot'
+                      description: 'AI agent for handling customer inquiries'
+                      agent_type: 'chat'
+                      platform: 'whatsapp'
+                      platform_config:
+                        webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                        phone_number: '+1234567890'
+                      status: 'active'
+                      is_active: true
+                      created_at: '2024-01-15T10:30:00Z'
+                      updated_at: '2024-01-15T10:30:00Z'
+                      deleted_at: null
+                  nextToken: 'eyJpZCI6ImFnZW50XzQ1NiIsImNyZWF0ZWRfYXQiOiIyMDI0LTAxLTE1VDEwOjMwOjAwWiJ9'
+                  hasMore: true
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: 'Create Agent'
+      description: |
+        Create a new AI agent with the specified configuration.
+
+        The agent will be associated with the authenticated user's team.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAgentRequest'
+            example:
+              team_id: '550e8400-e29b-41d4-a716-446655440000'
+              name: 'Customer Support Bot'
+              description: 'AI agent for handling customer inquiries and support tickets'
+              agent_type: 'chat'
+              platform: 'whatsapp'
+              platform_config:
+                webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                phone_number: '+1234567890'
+                welcome_message: 'Hello! How can I help you today?'
+              status: 'draft'
+              is_active: true
+      responses:
+        '201':
+          description: 'Agent created successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries and support tickets'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                    welcome_message: 'Hello! How can I help you today?'
+                  status: 'draft'
+                  is_active: true
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T10:30:00Z'
+                  deleted_at: null
+        '400':
+          description: 'Invalid request data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /agents/{id}:
+    get:
+      summary: 'Get Agent'
+      description: 'Retrieve detailed information about a specific agent'
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Agent details retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries and support tickets'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                    welcome_message: 'Hello! How can I help you today?'
+                  status: 'active'
+                  is_active: true
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T10:30:00Z'
+                  deleted_at: null
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: 'Update Agent'
+      description: |
+        Update an existing agent's configuration.
+
+        Only provided fields will be updated.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAgentRequest'
+            example:
+              name: 'Enhanced Customer Support Bot'
+              description: 'AI agent for handling customer inquiries with improved responses'
+              platform_config:
+                webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                phone_number: '+1234567890'
+                welcome_message: "Hello! I'm here to help you with any questions."
+                response_timeout: 30
+      responses:
+        '200':
+          description: 'Agent updated successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Enhanced Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries with improved responses'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                    welcome_message: "Hello! I'm here to help you with any questions."
+                    response_timeout: 30
+                  status: 'active'
+                  is_active: true
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T11:45:00Z'
+                  deleted_at: null
+        '400':
+          description: 'Invalid request data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: 'Delete Agent'
+      description: |
+        Soft delete an agent by setting its status to archived.
+
+        The agent data is preserved for audit purposes.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Agent deleted successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+              example:
+                ok: true
+                data:
+                  message: 'Agent deleted successfully'
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /agents/{id}/activate:
+    patch:
+      summary: 'Activate Agent'
+      description: |
+        Change an agent's status to 'active' and set is_active to true.
+
+        This makes the agent available for use in conversations.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Agent activated successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                  status: 'active'
+                  is_active: true
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T12:00:00Z'
+                  deleted_at: null
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /agents/{id}/pause:
+    patch:
+      summary: 'Pause Agent'
+      description: |
+        Change an agent's status to 'paused' and set is_active to false.
+
+        This temporarily disables the agent from participating in conversations.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Agent paused successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                  status: 'paused'
+                  is_active: false
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T12:00:00Z'
+                  deleted_at: null
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /agents/{id}/archive:
+    patch:
+      summary: 'Archive Agent'
+      description: |
+        Change an agent's status to 'archived' and set is_active to false.
+
+        This permanently disables the agent and marks it for long-term storage.
+      tags:
+        - Agents
+      security:
+        - ClerkAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: 'Agent ID'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Agent archived successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Agent'
+              example:
+                ok: true
+                data:
+                  id: '550e8400-e29b-41d4-a716-446655440001'
+                  team_id: '550e8400-e29b-41d4-a716-446655440000'
+                  created_by: 'user_2abc123def456'
+                  name: 'Customer Support Bot'
+                  description: 'AI agent for handling customer inquiries'
+                  agent_type: 'chat'
+                  platform: 'whatsapp'
+                  platform_config:
+                    webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+                    phone_number: '+1234567890'
+                  status: 'archived'
+                  is_active: false
+                  created_at: '2024-01-15T10:30:00Z'
+                  updated_at: '2024-01-15T12:00:00Z'
+                  deleted_at: null
+        '401':
+          description: 'Authentication required'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: 'Agent not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ClerkAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Clerk authentication token.
+
+        Include the Authorization header with a valid Clerk session token.
+        Example: `Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...`
+
+  schemas:
+    # Error Response
+    ErrorResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        error:
+          type: string
+          description: 'Human-readable error message'
+        code:
+          type: string
+          description: 'Machine-readable error code'
+        details:
+          type: object
+          description: 'Additional error context'
+          additionalProperties: true
+      required:
+        - ok
+        - error
+
+    # Agent Schemas
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'Unique agent identifier'
+        team_id:
+          type: string
+          format: uuid
+          description: 'ID of the team that owns this agent'
+        created_by:
+          type: string
+          format: uuid
+          description: 'ID of the user who created this agent'
+        name:
+          type: string
+          maxLength: 255
+          description: 'Agent name'
+        description:
+          type: string
+          description: 'Agent description'
+        agent_type:
+          type: string
+          enum: [chat, voice]
+          description: 'Type of agent'
+        platform:
+          type: string
+          maxLength: 100
+          description: 'Platform name (e.g., whatsapp, telegram, slack)'
+        platform_config:
+          type: object
+          description: 'Platform-specific configuration'
+          additionalProperties: true
+        status:
+          type: string
+          enum: [draft, active, paused, archived]
+          description: 'Current status of the agent'
+        is_active:
+          type: boolean
+          description: 'Whether the agent is active'
+        created_at:
+          type: string
+          format: date-time
+          description: 'When the agent was created'
+        updated_at:
+          type: string
+          format: date-time
+          description: 'When the agent was last updated'
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 'When the agent was deleted (soft delete)'
+      required:
+        - id
+        - team_id
+        - created_by
+        - name
+        - description
+        - agent_type
+        - platform
+        - platform_config
+        - status
+        - is_active
+        - created_at
+        - updated_at
+
+    CreateAgentRequest:
+      type: object
+      properties:
+        team_id:
+          type: string
+          format: uuid
+          description: 'ID of the team that will own this agent'
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: 'Agent name'
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: 'Agent description'
+        agent_type:
+          type: string
+          enum: [chat, voice]
+          description: 'Type of agent'
+        platform:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'Platform name'
+        platform_config:
+          type: object
+          description: 'Platform-specific configuration'
+          additionalProperties: true
+          default: {}
+        status:
+          type: string
+          enum: [draft, active, paused, archived]
+          description: 'Initial status'
+          default: draft
+        is_active:
+          type: boolean
+          description: 'Whether the agent should be active'
+          default: true
+      required:
+        - team_id
+        - name
+        - description
+        - agent_type
+        - platform
+
+    UpdateAgentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: 'Agent name'
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          description: 'Agent description'
+        agent_type:
+          type: string
+          enum: [chat, voice]
+          description: 'Type of agent'
+        platform:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'Platform name'
+        platform_config:
+          type: object
+          description: 'Platform-specific configuration'
+          additionalProperties: true
+        status:
+          type: string
+          enum: [draft, active, paused, archived]
+          description: 'Agent status'
+        is_active:
+          type: boolean
+          description: 'Whether the agent is active'
+
+    # User Schema (for authentication context)
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 'User ID in the database'
+        email:
+          type: string
+          format: email
+          description: "User's email address"
+        firstName:
+          type: string
+          description: "User's first name"
+        lastName:
+          type: string
+          description: "User's last name"
+      required:
+        - id
+        - email
+
+tags:
+  - name: Health
+    description: 'Health check endpoints'
+  - name: Webhooks
+    description: 'Webhook endpoints for external integrations'
+  - name: Agents
+    description: 'AI agent management endpoints'

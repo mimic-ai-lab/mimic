@@ -12,7 +12,7 @@
 
 Mimic is an immersive testing arena where lifelike virtual personas interact with your chat-, web-socket-, and voice-based assistants exactly as real people would—only faster, louder, and at limitless scale.
 
-It’s where product managers, conversational designers, and QA teams watch their assistants navigate everything from mundane small talk to once-in-a-lifetime emergencies, uncovering hidden flaws long before launch day.
+It's where product managers, conversational designers, and QA teams watch their assistants navigate everything from mundane small talk to once-in-a-lifetime emergencies, uncovering hidden flaws long before launch day.
 
 ## 🚀 Key Features
 
@@ -23,13 +23,13 @@ It’s where product managers, conversational designers, and QA teams watch thei
   Run end-to-end phone calls with crystal-clear speech, silence detection, cross-talk, and interruptions. Test wake-word timing, DTMF menus, and caller patience thresholds—exposing awkward pauses, misrecognitions, and IVR dead ends before your customers do.
 
 - **Time-Travel Scenarios**  
-  Accelerate a user’s life arc—simulate months or years in minutes, replay events on demand, and verify your assistant adapts to long-term changes, remembers promises, and evolves with the user.
+  Accelerate a user's life arc—simulate months or years in minutes, replay events on demand, and verify your assistant adapts to long-term changes, remembers promises, and evolves with the user.
 
 - **Stress & Spike Testing**  
   Ramp your test bed from calm Monday mornings to holiday-season chaos with a click. Adjustable think-time jitter, concurrency, and burst profiles let you confirm backend resilience and latency safeguards under real-world surges.
 
 - **Edge-Case Discovery**  
-  Inject garbled audio, code-switched language, sarcasm, or double-negatives. Persona “troublemakers” push your assistant off script to expose hidden loops and “that should never happen” moments—because they always do.
+  Inject garbled audio, code-switched language, sarcasm, or double-negatives. Persona "troublemakers" push your assistant off script to expose hidden loops and "that should never happen" moments—because they always do.
 
 - **Insightful Dashboard**  
   Get live transcripts, heat maps of slow responses, and persona-by-persona success rates. Export every session for deeper analysis in your BI stack, transforming conversations into actionable data.
@@ -93,16 +93,21 @@ Create a `.env` file in the root:
 ```env
 # Database
 DATABASE_URL="postgresql://user:password@localhost:5432/mimic"
+# 💡 Suggested: Use [Neon](https://neon.tech) for PostgreSQL hosting
 
-# Redis
-REDIS_URL="redis://localhost:6379"
+# Server Configuration
+API_SERVER_PORT=4000
+NODE_ENV=development
+LOG_LEVEL=info
 
-# OpenAI (for LLM personas)
-OPENAI_API_KEY="your-openai-key"
+# Clerk Authentication
+CLERK_PUBLISHABLE_KEY="pk_test_your-clerk-publishable-key"
+CLERK_SECRET_KEY="sk_test_your-clerk-secret-key"
+CLERK_WEBHOOK_SECRET="whsec_your-clerk-webhook-secret"
+# 💡 Get your keys from [Clerk Dashboard](https://dashboard.clerk.com)
 
-# Optional: External services
-TWILIO_ACCOUNT_SID="your-twilio-sid"
-TWILIO_AUTH_TOKEN="your-twilio-token"
+# Optional: Sentry for error tracking
+SENTRY_DSN="https://your-sentry-dsn@sentry.io/project-id"
 ```
 
 ## 📖 Documentation
@@ -113,6 +118,11 @@ TWILIO_AUTH_TOKEN="your-twilio-token"
 - **[Plugin Development](./docs/plugins.md)** - Building custom adapters
 - **[Deployment](./docs/deployment.md)** - Production deployment guide
 - **[Contributing](./CONTRIBUTING.md)** - How to contribute to Mimic
+
+## 🔌 API Specification
+
+- **OpenAPI Spec**: [apps/api/apispec.yaml](./apps/api/apispec.yaml)
+- **Postman Collection**: [Import to Postman](https://go.postman.co/workspace/ebf1269a-f80c-4dd8-84b8-79d7aed9abbb/collection)
 
 ## 🛠️ Development
 

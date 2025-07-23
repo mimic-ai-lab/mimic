@@ -19,5 +19,11 @@ declare module 'fastify' {
     interface FastifyRequest {
         env: EnvConfig;
         pg: Kysely<Database>;
+        user?: {
+            id: string;
+            email: string;
+            firstName?: string;
+            lastName?: string;
+        };
     }
 } 

@@ -11,6 +11,7 @@ import postgresPlugin from './postgres';
 import responseStandardizer from './response-standardizer';
 import { clerkPlugin } from '@clerk/fastify';
 import loggerPlugin from './logger';
+import authPlugin from './auth';
 
 export default async function setupPlugins(fastify: FastifyInstance): Promise<void> {
     // Register environment plugin first
@@ -51,6 +52,9 @@ export default async function setupPlugins(fastify: FastifyInstance): Promise<vo
         ignoredPaths: ["/health", /^\/static/], // Ignore specific paths
         ignore: (request) => request.headers["x-no-log"] === "true", // Custom ignore logic
     });
+
+    // Register authentication plugin
+    await fastify.register(authPlugin);
 
     // Register additional plugins here as needed
 }

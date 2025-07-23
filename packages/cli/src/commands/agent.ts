@@ -86,7 +86,7 @@ async function validateAgentYaml(filePath: string): Promise<{ valid: boolean; er
 
             // Validate platform compatibility
             const validPlatforms = VALID_PLATFORMS[config.agent_type];
-            const isValidPlatform = validPlatforms.some(p => p === config.platform);
+            const isValidPlatform = (validPlatforms as readonly string[]).includes(config.platform);
             if (!isValidPlatform) {
                 errors.push({
                     message: `Platform '${config.platform}' is not valid for agent type '${config.agent_type}'. Valid platforms: ${validPlatforms.join(', ')}`

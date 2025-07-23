@@ -144,8 +144,10 @@ event = webhook.verify(payload, headers);
 
 - Checks for existing users by `clerk_id` to prevent duplicates
 - Uses database transactions for atomicity
+
 - **Requires email address** - throws error if no email provided
 - Handles profile images and sign-in timestamps
+- Handles email addresses, profile images, and sign-in timestamps
 - Sets `is_active: true` for new users
 
 ### User Updates

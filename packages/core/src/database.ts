@@ -39,7 +39,7 @@ export interface TeamsTable {
 export interface UsersTable {
     id: string;
     clerk_id: string;
-    email: string;
+    email: string | null;
     first_name: string | null;
     last_name: string | null;
     image_url: string | null;

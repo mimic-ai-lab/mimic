@@ -109,6 +109,7 @@ export async function handleUserCreated(request: FastifyRequest, user: UserCreat
 export async function handleUserUpdated(request: FastifyRequest, user: UserCreatedSchemaType) {
     try {
         const now = new Date();
+
         const primaryEmail = user.email_addresses?.[0]?.email_address;
 
         // Ensure email is provided

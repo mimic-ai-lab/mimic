@@ -52,9 +52,7 @@ export default async function setupPlugins(fastify: FastifyInstance): Promise<vo
         ignoredPaths: ["/health", /^\/static/], // Ignore specific paths
         ignore: (request) => request.headers["x-no-log"] === "true", // Custom ignore logic
     });
-
     // Register authentication plugin
     await fastify.register(authPlugin);
-
     // Register additional plugins here as needed
 }

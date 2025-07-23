@@ -1,0 +1,220 @@
+# Agent Validation Patterns & YAML Structure
+
+## Agent YAML Schema
+
+All agent configuration files must follow this structure:
+
+```yaml
+name: 'Agent Name' # required (1-255 chars)
+id: '550e8400-e29b-41d4-a716-446655440000' # optional (UUID)
+version: '1.0.0' # optional (auto-generated if not provided)
+description: 'Agent description' # required (1-1000 chars)
+agent_type: 'chat' # required ("chat" or "voice")
+platform: 'whatsapp' # required (platform-specific)
+platform_config: # required (platform-specific settings)
+  webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+  display_phone_number: '+1234567890'
+  phone_number_id: '2331313123213'
+  graph_api_version: 'v23.0'
+```
+
+## Validation Layers
+
+The validation system in [packages/cli/src/commands/agent.ts](mdc:packages/cli/src/commands/agent.ts) uses a layered approach:
+
+### 1. Schema Validation (Zod)
+
+```typescript
+const AgentYamlSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Agent name is required')
+    .max(255, 'Agent name too long'),
+  id: z.string().uuid('Agent ID must be a valid UUID').optional(),
+  version: z.string().optional(),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(1000, 'Description too long'),
+  agent_type: z.enum(['chat', 'voice']),
+  platform: z
+    .string()
+    .min(1, 'Platform is required')
+    .max(100, 'Platform name too long'),
+  platform_config: z.record(z.string(), z.any()).default({}),
+});
+```
+
+### 2. Platform Compatibility
+
+```typescript
+const VALID_PLATFORMS = {
+  chat: ['whatsapp', 'slack', 'teams', 'sms', 'email', 'websocket'],
+  voice: ['twilio', 'custom', 'phone'],
+} as const;
+```
+
+### 3. Platform-Specific Validation
+
+```typescript
+const WhatsAppConfigSchema = z.object({
+  webhook_url: z.string().url('Webhook URL must be a valid URL'),
+  display_phone_number: z
+    .string()
+    .regex(/^\+[1-9]\d{1,14}$/, 'Phone number must be in international format'),
+  phone_number_id: z.string().min(1, 'Phone number ID is required'),
+  graph_api_version: z
+    .string()
+    .regex(/^v\d+\.\d+$/, 'Graph API version must be in format vXX.X'),
+});
+```
+
+## Supported Platforms
+
+### Chat Agents (`agent_type: "chat"`)
+
+- `whatsapp` - WhatsApp Business API
+- `slack` - Slack Bot API
+- `teams` - Microsoft Teams
+- `sms` - SMS messaging
+- `email` - Email integration
+- `websocket` - WebSocket connections
+
+### Voice Agents (`agent_type: "voice"`)
+
+- `twilio` - Twilio Voice API
+- `custom` - Custom voice integration
+- `phone` - Traditional phone systems
+
+## Platform Configurations
+
+### WhatsApp Configuration
+
+```yaml
+agent_type: 'chat'
+platform: 'whatsapp'
+platform_config:
+  webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+  display_phone_number: '+1234567890'
+  phone_number_id: '2331313123213'
+  graph_api_version: 'v23.0'
+```
+
+**Required Fields:**
+
+- `webhook_url` - Valid HTTPS URL for webhook endpoint
+- `display_phone_number` - International phone number format (`+1234567890`)
+- `phone_number_id` - WhatsApp phone number ID (non-empty string)
+- `graph_api_version` - Facebook Graph API version (`vXX.X` format)
+
+### Slack Configuration
+
+```yaml
+agent_type: 'chat'
+platform: 'slack'
+platform_config:
+  slackToken: 'xoxb-your-bot-token'
+  slackChannel: '#general' # optional
+```
+
+### Teams Configuration
+
+```yaml
+agent_type: 'chat'
+platform: 'teams'
+platform_config:
+  teamsWebhook: 'https://yourcompany.webhook.office.com/webhookb2/...'
+  teamsChannel: 'General' # optional
+```
+
+## Validation Rules
+
+### General Rules
+
+1. **Name**: 1-255 characters, required
+2. **Description**: 1-1000 characters, required
+3. **Agent Type**: Must be `"chat"` or `"voice"`
+4. **Platform**: Must be valid for the selected agent type
+5. **ID**: If provided, must be a valid UUID format
+
+### URL Validation
+
+- All webhook URLs must be valid HTTPS URLs
+- Must include protocol (`https://`)
+- Must have valid domain structure
+
+### Phone Number Validation
+
+- Must be in international format
+- Must start with `+` followed by country code
+- Must be 7-15 digits total
+- Example: `+1234567890`
+
+### Version Auto-Generation
+
+If an `id` is provided but no `version` is specified:
+
+- Auto-generate version numbers (v1, v2, v3, etc.)
+- Show a warning about auto-generation
+- Allow manual version specification
+
+## Error Messages
+
+### Schema Errors
+
+```
+❌ Agent name is required
+❌ Description is required
+❌ Agent type must be 'chat' or 'voice'
+❌ Platform is required
+```
+
+### Platform Compatibility Errors
+
+```
+❌ Platform 'invalid_platform' is not valid for agent type 'chat'
+Valid platforms: whatsapp, slack, teams, sms, email, websocket
+```
+
+### WhatsApp Configuration Errors
+
+```
+❌ Webhook URL must be a valid URL
+❌ Phone number must be in international format (e.g., +1234567890)
+❌ Phone number ID is required
+❌ Graph API version must be in format vXX.X (e.g., v23.0)
+```
+
+## Testing Examples
+
+Test files are organized in [packages/cli/examples/agents/](mdc:packages/cli/examples/agents/):
+
+- **Valid Examples**: `test-agent.yaml`, `example-agent.yaml`, `test-agent-with-id.yaml`
+- **Invalid Examples**: `test-invalid-agent.yaml`, `test-whatsapp-invalid.yaml`
+
+## CLI Usage
+
+```bash
+# Basic validation
+mimic agent validate agent.yaml
+
+# Verbose validation with details
+mimic agent validate agent.yaml --verbose
+
+# Show help
+mimic agent --help
+mimic agent validate --help
+```
+
+## Adding New Platform Validations
+
+1. Add platform to `VALID_PLATFORMS` object
+2. Create platform-specific schema in `platformConfigValidators`
+3. Add validation logic for required/optional fields
+4. Update documentation in [packages/cli/AGENT_YAML_REFERENCE.md](mdc:packages/cli/AGENT_YAML_REFERENCE.md)
+5. Add test examples in [packages/cli/examples/agents/](mdc:packages/cli/examples/agents/)
+   description:
+   globs:
+   alwaysApply: false
+
+---

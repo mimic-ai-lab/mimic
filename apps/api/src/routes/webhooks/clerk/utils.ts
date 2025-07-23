@@ -12,7 +12,17 @@ import { UserCreatedSchemaType, UserDeletedSchemaType } from './schema';
 export async function handleUserCreated(request: FastifyRequest, user: UserCreatedSchemaType) {
     try {
         const now = new Date();
-        const primaryEmail = user.email_addresses?.[0]?.email_address || null;
+        const primaryEmail = user.email_addresses?.[0]?.email_address;
+
+        // Ensure email is provided
+        if (!primaryEmail) {
+            request.log.error('❌ User created without email address', {
+                userId: user.id,
+                emailAddresses: user.email_addresses
+            });
+            throw new Error('Email address is required for user creation');
+        }
+
         const imageUrl = user.image_url || user.profile_image_url || null;
         const lastSignIn = typeof user.last_sign_in_at === 'number' ? new Date(user.last_sign_in_at) : null;
 
@@ -99,7 +109,17 @@ export async function handleUserCreated(request: FastifyRequest, user: UserCreat
 export async function handleUserUpdated(request: FastifyRequest, user: UserCreatedSchemaType) {
     try {
         const now = new Date();
-        const primaryEmail = user.email_addresses?.[0]?.email_address || null;
+        const primaryEmail = user.email_addresses?.[0]?.email_address;
+
+        // Ensure email is provided
+        if (!primaryEmail) {
+            request.log.error('❌ User updated without email address', {
+                userId: user.id,
+                emailAddresses: user.email_addresses
+            });
+            throw new Error('Email address is required for user updates');
+        }
+
         const imageUrl = user.image_url || user.profile_image_url || null;
         const lastSignIn = typeof user.last_sign_in_at === 'number' ? new Date(user.last_sign_in_at) : null;
 

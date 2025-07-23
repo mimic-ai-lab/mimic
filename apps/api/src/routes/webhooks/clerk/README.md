@@ -72,6 +72,15 @@ Health check endpoint for monitoring webhook service status.
 
 ## Configuration
 
+### Email Requirements
+
+The webhook requires all users to have a valid email address:
+
+- **User Creation**: Email address is required and must be provided in the webhook payload
+- **User Updates**: Email address is required for updates
+- **Database Constraint**: Email field is `NOT NULL` and `UNIQUE` in the database
+- **Error Handling**: Webhook will return an error if no email is provided
+
 ### Environment Variables
 
 | Variable               | Description                               | Required |
@@ -135,7 +144,8 @@ event = webhook.verify(payload, headers);
 
 - Checks for existing users by `clerk_id` to prevent duplicates
 - Uses database transactions for atomicity
-- Handles email addresses, profile images, and sign-in timestamps
+- **Requires email address** - throws error if no email provided
+- Handles profile images and sign-in timestamps
 - Sets `is_active: true` for new users
 
 ### User Updates

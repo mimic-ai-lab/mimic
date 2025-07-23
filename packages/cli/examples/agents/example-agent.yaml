@@ -1,0 +1,41 @@
+# Example Agent Configuration for Mimic CLI
+# This file demonstrates the structure and validation rules for agent.yaml
+
+# Required: Agent name (1-255 characters)
+name: 'Customer Support Bot'
+
+# Optional: Agent ID (UUID format) - used for updates/versions
+# id: "550e8400-e29b-41d4-a716-446655440000"
+
+# Optional: Version (if not provided, will auto-generate v1, v2, etc.)
+# version: "1.0.0"
+
+# Required: Description of what the agent does (1-1000 characters)
+description: 'AI agent for handling customer inquiries and support tickets across WhatsApp'
+
+# Required: Agent type - must be "chat" or "voice"
+agent_type: 'chat'
+
+# Required: Platform - must be valid for the agent type
+# For chat agents: whatsapp, slack, teams, sms, email, websocket
+# For voice agents: twilio, custom, phone
+platform: 'whatsapp'
+
+# Required: Platform-specific configuration
+platform_config:
+  # WhatsApp-specific configuration
+  webhook_url: 'https://api.mimicai.co/webhooks/whatsapp'
+  display_phone_number: '+1234567890'
+  phone_number_id: '2331313123213'
+  graph_api_version: 'v23.0'
+# Example Slack configuration:
+# platform: "slack"
+# platform_config:
+#   slackToken: "xoxb-your-bot-token"
+#   slackChannel: "#general"
+
+# Example Teams configuration:
+# platform: "teams"
+# platform_config:
+#   teamsWebhook: "https://yourcompany.webhook.office.com/webhookb2/..."
+#   teamsChannel: "General"

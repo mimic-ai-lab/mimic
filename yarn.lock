@@ -22,6 +22,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@anatine/zod-openapi@npm:^2.2.8":
+  version: 2.2.8
+  resolution: "@anatine/zod-openapi@npm:2.2.8"
+  dependencies:
+    ts-deepmerge: "npm:^6.0.3"
+  peerDependencies:
+    openapi3-ts: ^4.1.2
+    zod: ^3.20.0
+  checksum: 10c0/30d38bcd24c366bf09ed60516eb4f8aaf91bbfed091b6dca61a06d63854dfd6df140bc35ce2ae65f3132d03254802d56f16ae41e16b0a972be40030e652d554f
+  languageName: node
+  linkType: hard
+
+"@asteasolutions/zod-to-openapi@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:8.0.0"
+  dependencies:
+    openapi3-ts: "npm:^4.1.2"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/b522d074832fb137dca724c8bd4bb134c7b4d4cad12c247ed3c864f993923b3475fc06580e6e1cbc4fd8641cd361679bbe1dd87c9bb42e142bc056d96d59fbc8
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.12.13, @babel/code-frame@npm:^7.27.1":
   version: 7.27.1
   resolution: "@babel/code-frame@npm:7.27.1"
@@ -1995,6 +2018,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mimic/api@workspace:apps/api"
   dependencies:
+    "@anatine/zod-openapi": "npm:^2.2.8"
+    "@asteasolutions/zod-to-openapi": "npm:^8.0.0"
     "@clerk/fastify": "npm:^2.4.10"
     "@fastify/cors": "npm:^11.0.1"
     "@fastify/rate-limit": "npm:^10.3.0"
@@ -2019,8 +2044,9 @@ __metadata:
     ts-jest: "npm:^29.4.0"
     tsx: "npm:^4.20.3"
     uuid: "npm:^11.1.0"
-    zod: "npm:^4.0.5"
-    zod-to-json-schema: "npm:^3.22.4"
+    zod: "npm:^3.24.1"
+    zod-openapi: "npm:^5.2.0"
+    zod-to-json-schema: "npm:^3.24.6"
   languageName: unknown
   linkType: soft
 
@@ -10476,6 +10502,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi3-ts@npm:^4.1.2":
+  version: 4.5.0
+  resolution: "openapi3-ts@npm:4.5.0"
+  dependencies:
+    yaml: "npm:^2.8.0"
+  checksum: 10c0/97de2d24e9ceffb89e1388e137e4a6e17ee57a02dce0c938a5e98b1338ac72b31e8b2ce8dd28945ad43fae8bee2a145892cb548ba5ae60b0930f1b6b79b0747d
+  languageName: node
+  linkType: hard
+
 "optionator@npm:^0.9.3":
   version: 0.9.4
   resolution: "optionator@npm:0.9.4"
@@ -12421,6 +12456,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-deepmerge@npm:^6.0.3":
+  version: 6.2.1
+  resolution: "ts-deepmerge@npm:6.2.1"
+  checksum: 10c0/b73bc0a0530b26b3969f994483abbb33a8514a9b345e7095cf2add5242cd1fe388c1007c4989e2d8b193fe608f9d7a443025a635fd4331bd0ceb76c73f748adf
+  languageName: node
+  linkType: hard
+
 "ts-jest@npm:^29.4.0":
   version: 29.4.0
   resolution: "ts-jest@npm:29.4.0"
@@ -13176,6 +13218,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yaml@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "yaml@npm:2.8.0"
+  bin:
+    yaml: bin.mjs
+  checksum: 10c0/f6f7310cf7264a8107e72c1376f4de37389945d2fb4656f8060eca83f01d2d703f9d1b925dd8f39852a57034fafefde6225409ddd9f22aebfda16c6141b71858
+  languageName: node
+  linkType: hard
+
 "yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
@@ -13212,12 +13263,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.22.4":
+"zod-openapi@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "zod-openapi@npm:5.2.0"
+  peerDependencies:
+    zod: ^3.25.74 || ^4.0.0
+  checksum: 10c0/647b54573d7746b98a28773ced5d100a1804b25222c4288d58e69ab1317aa5f816d5feb6f7a02b031852040f49c5467c9eab361907e13d4c667cdc3e52f5cd7e
+  languageName: node
+  linkType: hard
+
+"zod-to-json-schema@npm:^3.24.6":
   version: 3.24.6
   resolution: "zod-to-json-schema@npm:3.24.6"
   peerDependencies:
     zod: ^3.24.1
   checksum: 10c0/b907ab6d057100bd25a37e5545bf5f0efa5902cd84d3c3ec05c2e51541431a47bd9bf1e5e151a244273409b45f5986d55b26e5d207f98abc5200702f733eb368
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.24.1":
+  version: 3.25.76
+  resolution: "zod@npm:3.25.76"
+  checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
   languageName: node
   linkType: hard
 

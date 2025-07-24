@@ -10,6 +10,7 @@ export interface Database {
     teams: TeamsTable;
     users: UsersTable;
     team_members: TeamMembersTable;
+    team_api_keys: TeamApiKeysTable;
 }
 
 export interface AgentsTable {
@@ -57,4 +58,19 @@ export interface TeamMembersTable {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date | null;
+}
+
+export interface TeamApiKeysTable {
+    id: string;
+    team_id: string;
+    name: string;
+    key_hash: string;
+    key_prefix: string;
+    scope: 'read' | 'write' | 'full';
+    created_by: string;
+    expires_at: Date | null;
+    last_used_at: Date | null;
+    created_at: Date;
+    updated_at: Date;
+    is_active: boolean;
 } 

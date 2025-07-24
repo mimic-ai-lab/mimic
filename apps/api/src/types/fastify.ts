@@ -25,5 +25,9 @@ declare module 'fastify' {
             firstName?: string;
             lastName?: string;
         };
+        team?: {
+            teamId: string;
+            teamName: string;
+        };
     }
 } 

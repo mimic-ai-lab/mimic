@@ -87,6 +87,31 @@ CREATE TABLE
             TIME ZONE
     );
 
+-- Team API keys table - for CLI authentication
+CREATE TABLE
+    team_api_keys (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
+        team_id UUID NOT NULL REFERENCES teams (id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        key_hash VARCHAR(255) UNIQUE NOT NULL,
+        key_prefix VARCHAR(10) NOT NULL, -- First 10 chars for identification
+        scope VARCHAR(50) NOT NULL DEFAULT 'full' CHECK (scope IN ('read', 'write', 'full')),
+        created_by UUID NOT NULL REFERENCES users (id),
+        expires_at TIMESTAMP
+        WITH
+            TIME ZONE,
+            last_used_at TIMESTAMP
+        WITH
+            TIME ZONE,
+            created_at TIMESTAMP
+        WITH
+            TIME ZONE DEFAULT NOW (),
+            updated_at TIMESTAMP
+        WITH
+            TIME ZONE DEFAULT NOW (),
+            is_active BOOLEAN DEFAULT true
+    );
+
 -- Basic indexes
 CREATE INDEX idx_teams_slug ON teams (slug);
 
@@ -110,3 +135,14 @@ CREATE INDEX idx_agents_platform ON agents (platform);
 CREATE INDEX idx_agents_status ON agents (status);
 
 CREATE INDEX idx_agents_is_active ON agents (is_active);
+
+-- Team API key indexes
+CREATE INDEX idx_team_api_keys_team_id ON team_api_keys (team_id);
+
+CREATE INDEX idx_team_api_keys_key_hash ON team_api_keys (key_hash);
+
+CREATE INDEX idx_team_api_keys_key_prefix ON team_api_keys (key_prefix);
+
+CREATE INDEX idx_team_api_keys_is_active ON team_api_keys (is_active);
+
+CREATE INDEX idx_team_api_keys_created_by ON team_api_keys (created_by);

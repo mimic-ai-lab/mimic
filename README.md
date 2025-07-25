@@ -16,6 +16,9 @@ It's where product managers, conversational designers, and QA teams watch their 
 
 ## 🚀 Key Features
 
+- **AI-Powered Agent Bootstrap**  
+  Automatically generate realistic personas and evaluation metrics when creating new agents. Uses OpenAI to create platform-specific personas with detailed demographics, communication styles, and conversation patterns. Each agent gets custom evaluation criteria based on its purpose and platform.
+
 - **Persona Swarms**  
   Instantly spin up hundreds—or thousands—of synthetic users, each with unique backstories, emotional tones, and conversation quirks. Mix and match demographics, languages, and typing styles (emoji-heavy, typo-prone, rapid-fire, etc.) to see how your assistant handles the glorious unpredictability of real human variety.
 
@@ -46,10 +49,11 @@ It's where product managers, conversational designers, and QA teams watch their 
 apps/
 ├── api/          # Fastify server (REST/GraphQL, webhooks, auth)
 ├── web/          # Next.js 14 dashboard (RSC / App Router)
-└── worker/       # BullMQ executor (sessions & personas)
+└── worker/       # Temporal worker (workflows & activities)
 
 packages/
 ├── core/         # Domain types, ORM, logger (shared)
+├── temporal-workflows/  # Shared Temporal workflows & activities
 ├── adapters/     # Protocol adapters (whatsapp, voice, ws...)
 ├── plugin-sdk/   # Public plugin API for community extensions
 └── cli/          # `mimic <cmd>` helpers
@@ -57,14 +61,24 @@ packages/
 infra/            # Terraform / Docker Compose / Helm (IaC)
 ```
 
+### 🔄 Temporal Workflow Architecture
+
+Mimic uses **Temporal** for orchestrating long-running processes like agent bootstrap workflows:
+
+- **Agent Bootstrap Workflow**: Automatically generates personas and evaluations when agents are created
+- **Shared Workflows**: Reusable workflow definitions in `packages/temporal-workflows`
+- **Activities**: Discrete units of work (OpenAI calls, database operations)
+- **Temporal Cloud**: Managed Temporal service for production reliability
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - **Node.js** 18+
 - **Yarn** 4.9.1+
-- **Redis** (for BullMQ)
 - **PostgreSQL** (for data persistence)
+- **Temporal Cloud** (for workflow orchestration)
+- **OpenAI API** (for persona and evaluation generation)
 
 ### Installation
 
@@ -105,6 +119,16 @@ CLERK_PUBLISHABLE_KEY="pk_test_your-clerk-publishable-key"
 CLERK_SECRET_KEY="sk_test_your-clerk-secret-key"
 CLERK_WEBHOOK_SECRET="whsec_your-clerk-webhook-secret"
 # 💡 Get your keys from [Clerk Dashboard](https://dashboard.clerk.com)
+
+# Temporal Cloud (for workflow orchestration)
+TEMPORAL_API_KEY="your-temporal-cloud-api-key"
+TEMPORAL_NAMESPACE="your-temporal-namespace"
+TEMPORAL_ADDRESS="your-temporal-cloud-address"
+# 💡 Get your keys from [Temporal Cloud](https://cloud.temporal.io)
+
+# OpenAI (for persona and evaluation generation)
+OPENAI_API_KEY="your-openai-api-key"
+# 💡 Get your key from [OpenAI Platform](https://platform.openai.com)
 
 # Optional: Sentry for error tracking
 SENTRY_DSN="https://your-sentry-dsn@sentry.io/project-id"
@@ -149,6 +173,30 @@ yarn type-check
 # Clean build artifacts
 yarn clean
 ```
+
+### CLI & API Key Authentication
+
+Mimic supports both web dashboard (JWT auth) and CLI (API key auth) interfaces:
+
+```bash
+# CLI usage with API key
+curl -X POST http://localhost:4000/api/cli/agents \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-team-api-key" \
+  -d '{
+    "name": "Customer Support Bot",
+    "description": "Handles customer inquiries",
+    "agent_type": "chat",
+    "platform": "whatsapp"
+  }'
+```
+
+**API Key Features:**
+
+- Team-scoped authentication
+- Automatic persona and evaluation generation
+- Temporal workflow orchestration
+- Secure SHA-256 hashed storage
 
 ### Package Scripts
 
@@ -221,7 +269,8 @@ For commercial use inquiries, please [contact the Mimic team](mailto:hello@mimic
 
 - Built with [Fastify](https://fastify.io/) for blazing-fast APIs
 - Powered by [Next.js 14](https://nextjs.org/) for the dashboard
-- Job processing with [BullMQ](https://docs.bullmq.io/)
+- Workflow orchestration with [Temporal](https://temporal.io/)
+- AI-powered persona generation with [OpenAI](https://openai.com/)
 - Monorepo orchestration with [Turborepo](https://turbo.build/)
 
 ## 📞 Support

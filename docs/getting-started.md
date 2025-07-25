@@ -7,9 +7,9 @@ Welcome to Mimic! This guide will help you get up and running with stress-testin
 By the end of this guide, you'll have:
 
 - ✅ Mimic running locally
-- ✅ Created your first persona
-- ✅ Set up a test session
-- ✅ Monitored results in the dashboard
+- ✅ Created your first agent via CLI
+- ✅ Generated AI-powered personas and evaluations
+- ✅ Set up Temporal workflows for agent bootstrap
 
 ## 📋 Prerequisites
 
@@ -17,18 +17,15 @@ Before you begin, ensure you have:
 
 - **Node.js** 18+ ([Download](https://nodejs.org/))
 - **Yarn** 4.9.1+ (`npm install -g yarn`)
-- **Redis** (for job processing)
 - **PostgreSQL** (for data persistence)
+- **Temporal Cloud** (for workflow orchestration)
+- **OpenAI API** (for persona and evaluation generation)
 
-### Installing Redis & PostgreSQL
+### Installing PostgreSQL
 
 #### macOS (using Homebrew)
 
 ```bash
-# Install Redis
-brew install redis
-brew services start redis
-
 # Install PostgreSQL
 brew install postgresql
 brew services start postgresql
@@ -37,11 +34,6 @@ brew services start postgresql
 #### Ubuntu/Debian
 
 ```bash
-# Install Redis
-sudo apt update
-sudo apt install redis-server
-sudo systemctl start redis-server
-
 # Install PostgreSQL
 sudo apt install postgresql postgresql-contrib
 sudo systemctl start postgresql
@@ -49,7 +41,6 @@ sudo systemctl start postgresql
 
 #### Windows
 
-- **Redis**: Download from [redis.io](https://redis.io/download)
 - **PostgreSQL**: Download from [postgresql.org](https://www.postgresql.org/download/windows/)
 
 ## 🚀 Installation
@@ -75,15 +66,18 @@ Create a `.env` file in the root directory:
 # Database Configuration
 DATABASE_URL="postgresql://username:password@localhost:5432/mimic"
 
-# Redis Configuration
-REDIS_URL="redis://localhost:6379"
+# Temporal Cloud (for workflow orchestration)
+TEMPORAL_API_KEY="your-temporal-cloud-api-key"
+TEMPORAL_NAMESPACE="your-temporal-namespace"
+TEMPORAL_ADDRESS="your-temporal-cloud-address"
 
-# OpenAI Configuration (for LLM personas)
+# OpenAI Configuration (for persona and evaluation generation)
 OPENAI_API_KEY="your-openai-api-key"
 
-# Optional: External Services
-TWILIO_ACCOUNT_SID="your-twilio-sid"
-TWILIO_AUTH_TOKEN="your-twilio-token"
+# Clerk Authentication (for web dashboard)
+CLERK_PUBLISHABLE_KEY="pk_test_your-clerk-publishable-key"
+CLERK_SECRET_KEY="sk_test_your-clerk-secret-key"
+CLERK_WEBHOOK_SECRET="whsec_your-clerk-webhook-secret"
 ```
 
 ### 4. Database Setup
@@ -110,159 +104,144 @@ This will start:
 
 - **API Server** at http://localhost:4000
 - **Dashboard** at http://localhost:3000
-- **Worker** (background processing)
+- **Temporal Worker** (background workflow processing)
 
-## 🎭 Creating Your First Persona
+## 🤖 Creating Your First Agent
 
-### 1. Access the Dashboard
+### 1. Using the CLI (Recommended)
 
-Open http://localhost:3000 in your browser.
+Create an agent using the CLI with API key authentication:
 
-### 2. Create a Persona
-
-Navigate to **Personas** → **Create New**:
-
-```json
-{
-  "name": "Frustrated Customer",
-  "description": "A customer who is having trouble with their order",
-  "prompt": "You are a frustrated customer who ordered a product online. The order was delayed, and you're calling customer service to get help. You're polite but clearly annoyed. You want a resolution quickly.",
-  "traits": {
-    "communication_style": "direct",
-    "patience_level": "low",
-    "urgency": "high"
-  }
-}
+```bash
+# Create an agent via CLI
+curl -X POST http://localhost:4000/api/cli/agents \
+  -H "X-API-Key: your-team-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Customer Support Bot",
+    "description": "AI agent for handling customer inquiries",
+    "agent_type": "chat",
+    "platform": "whatsapp",
+    "platform_config": {
+      "webhook_url": "https://your-bot.com/webhook",
+      "phone_number": "+1234567890"
+    }
+  }'
 ```
 
-### 3. Configure Your Agent
+**What happens automatically:**
 
-Go to **Agents** → **Add Agent**:
+- ✅ Agent is created in your team's database
+- ✅ Temporal workflow triggers agent bootstrap
+- ✅ OpenAI generates realistic persona for the agent
+- ✅ OpenAI generates custom evaluation metrics
+- ✅ Both persona and evaluations are saved to database
 
-```json
-{
-  "name": "My WhatsApp Bot",
-  "type": "whatsapp",
-  "config": {
-    "webhook_url": "https://your-bot.com/webhook",
-    "phone_number": "+1234567890"
-  }
-}
+### 2. Using the Web Dashboard
+
+Alternatively, create an agent through the web dashboard:
+
+1. Open http://localhost:3000 in your browser
+2. Navigate to **Agents** → **Create New**
+3. Fill in the agent details
+4. The system will automatically generate personas and evaluations
+
+## 🧪 Monitoring Your Agent
+
+### 1. Check Generated Personas
+
+View the AI-generated personas for your agent:
+
+```bash
+# List agents to see your created agent
+curl -X GET http://localhost:4000/api/cli/agents \
+  -H "X-API-Key: your-team-api-key"
 ```
 
-## 🧪 Running Your First Test
+### 2. Check Generated Evaluations
 
-### 1. Create a Session
+The system automatically creates evaluation metrics for your agent:
 
-In the dashboard, go to **Sessions** → **New Session**:
+- **Response Time Evaluation**: Measures agent response latency
+- **Sentiment Analysis**: Evaluates customer satisfaction
+- **Accuracy Metrics**: Tracks correct responses
+- **Custom Metrics**: Platform-specific evaluations
 
-- **Agent**: Select your configured agent
-- **Persona**: Choose "Frustrated Customer"
-- **Duration**: 5 minutes
-- **Concurrent Users**: 10
+### 3. Monitor Temporal Workflows
 
-### 2. Monitor the Session
+Check the worker logs to see the bootstrap process:
 
-Watch the real-time dashboard as:
-
-- Virtual users start conversations
-- Messages are exchanged
-- Analytics are updated
-
-### 3. Review Results
-
-After the session completes:
-
-- **Session Summary**: Overall performance metrics
-- **Message Logs**: Full conversation history
-- **Error Analysis**: Any issues encountered
-- **Performance Metrics**: Response times, success rates
+```bash
+# In the worker terminal, you should see:
+# 🚀 Starting agent bootstrap workflow for agent: [agent-id]
+# 🎭 Generating personas...
+# ✅ OpenAI persona generated: [persona details]
+# ✅ Persona saved to database for agent: [agent-id]
+# 📊 Generating evaluations...
+# ✅ OpenAI evaluations generated: [evaluation details]
+# ✅ X evaluations saved to database for agent: [agent-id]
+```
 
 ## 🔧 Configuration Options
 
-### Persona Configuration
+### Agent Configuration
 
-Personas can be customized with:
+Agents can be configured with different platforms and types:
 
 ```typescript
-interface Persona {
+interface Agent {
   name: string;
   description: string;
-  prompt: string; // LLM prompt for behavior
-  traits: {
-    communication_style: 'formal' | 'casual' | 'direct';
-    patience_level: 'low' | 'medium' | 'high';
-    urgency: 'low' | 'medium' | 'high';
-    technical_knowledge: 'none' | 'basic' | 'advanced';
-  };
-  message_interval: number; // Seconds between messages
-  session_duration: number; // Maximum session length
+  agent_type: 'chat' | 'voice';
+  platform: string; // 'whatsapp', 'telegram', 'slack', etc.
+  platform_config: Record<string, any>;
+  status: 'draft' | 'active' | 'paused' | 'archived';
+  is_active: boolean;
 }
 ```
 
-### Agent Configuration
-
-Different agent types support various configurations:
+### Platform Configurations
 
 #### WhatsApp Agent
 
 ```json
 {
-  "type": "whatsapp",
-  "config": {
+  "agent_type": "chat",
+  "platform": "whatsapp",
+  "platform_config": {
     "webhook_url": "https://your-bot.com/webhook",
     "phone_number": "+1234567890",
-    "api_key": "your-whatsapp-api-key"
+    "welcome_message": "Hello! How can I help you today?"
   }
 }
 ```
 
-#### Voice Agent
+#### Telegram Agent
 
 ```json
 {
-  "type": "voice",
-  "config": {
-    "twilio_account_sid": "your-sid",
-    "twilio_auth_token": "your-token",
-    "phone_number": "+1234567890"
+  "agent_type": "chat",
+  "platform": "telegram",
+  "platform_config": {
+    "bot_token": "your-telegram-bot-token",
+    "webhook_url": "https://your-bot.com/webhook"
   }
 }
 ```
 
-#### WebSocket Agent
+### AI-Generated Data
 
-```json
-{
-  "type": "websocket",
-  "config": {
-    "url": "wss://your-websocket-server.com",
-    "protocol": "chat",
-    "headers": {
-      "Authorization": "Bearer your-token"
-    }
-  }
-}
-```
+The system automatically generates:
+
+- **Personas**: Realistic user profiles with demographics, communication styles, and conversation patterns
+- **Evaluations**: Custom metrics based on agent purpose and platform
+- **Simulation Tags**: Categories for organizing test scenarios
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-#### 1. Redis Connection Error
-
-```
-Error: Redis connection failed
-```
-
-**Solution**: Ensure Redis is running:
-
-```bash
-redis-cli ping
-# Should return PONG
-```
-
-#### 2. Database Connection Error
+#### 1. Database Connection Error
 
 ```
 Error: Database connection failed
@@ -274,6 +253,21 @@ Error: Database connection failed
 psql -U postgres -d mimic -c "SELECT 1;"
 ```
 
+#### 2. Temporal Cloud Connection Error
+
+```
+Error: Temporal connection failed
+```
+
+**Solution**: Verify your Temporal Cloud credentials in the `.env` file:
+
+```bash
+# Check environment variables
+echo $TEMPORAL_API_KEY
+echo $TEMPORAL_NAMESPACE
+echo $TEMPORAL_ADDRESS
+```
+
 #### 3. OpenAI API Error
 
 ```
@@ -282,13 +276,19 @@ Error: OpenAI API key invalid
 
 **Solution**: Verify your OPENAI_API_KEY in the `.env` file.
 
-#### 4. Port Already in Use
+#### 4. Worker Not Starting
 
 ```
-Error: Port 3000/4000 already in use
+Error: Worker failed to start
 ```
 
-**Solution**: Kill the process or change ports in package.json.
+**Solution**: Check that the worker can load environment variables:
+
+```bash
+# In apps/worker directory
+cd apps/worker
+yarn dev
+```
 
 ### Getting Help
 
@@ -302,7 +302,7 @@ Now that you have Mimic running, explore:
 
 1. **[Architecture Guide](./architecture.md)** - Understand the system design
 2. **[API Reference](./api-reference.md)** - Integrate with your own tools
-3. **[Plugin Development](./plugins.md)** - Build custom adapters
+3. **[CLI Documentation](./cli.md)** - Use the command-line interface
 4. **[Deployment Guide](./deployment.md)** - Deploy to production
 
-Happy testing! 🚀
+Happy agent building! 🚀

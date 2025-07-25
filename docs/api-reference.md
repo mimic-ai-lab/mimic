@@ -11,234 +11,184 @@ Production: https://api.mimic.dev
 
 ## 🔐 Authentication
 
-All API endpoints require authentication using JWT tokens.
+Mimic supports two authentication methods:
 
-### Headers
+### 1. Web Dashboard Authentication (JWT)
+
+For web dashboard access, use Clerk JWT tokens:
 
 ```
-Authorization: Bearer <your-jwt-token>
+Authorization: Bearer <your-clerk-jwt-token>
 Content-Type: application/json
 ```
 
-### Getting an Access Token
+### 2. CLI Authentication (API Key)
+
+For CLI and external integrations, use API keys:
+
+```
+X-API-Key: <your-team-api-key>
+Content-Type: application/json
+```
+
+### API Key Management
+
+API keys are team-scoped and provide access to CLI endpoints:
 
 ```bash
-curl -X POST http://localhost:4000/api/auth/login \
+# Create an agent via CLI
+curl -X POST http://localhost:4000/api/cli/agents \
+  -H "X-API-Key: your-team-api-key" \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "your-password"
+    "name": "Customer Support Bot",
+    "description": "AI agent for handling customer inquiries",
+    "agent_type": "chat",
+    "platform": "whatsapp",
+    "platform_config": {
+      "webhook_url": "https://your-bot.com/webhook"
+    }
   }'
 ```
 
-Response:
+**Features:**
 
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer",
-  "expires_in": 3600
-}
-```
+- Team-scoped access
+- Automatic persona and evaluation generation
+- Temporal workflow orchestration
+- SHA-256 hashed storage
 
 ## 📋 API Endpoints
 
-### Sessions
+### CLI Endpoints (API Key Authentication)
 
-#### Create Session
+#### Create Agent
 
 ```http
-POST /api/sessions
+POST /api/cli/agents
+```
+
+**Headers:**
+
+```
+X-API-Key: your-team-api-key
+Content-Type: application/json
 ```
 
 **Request Body:**
 
 ```json
 {
-  "agentId": "agent-uuid",
-  "personaId": "persona-uuid",
-  "config": {
-    "duration": 300,
-    "maxMessages": 50,
-    "messageInterval": 30
+  "name": "Customer Support Bot",
+  "description": "AI agent for handling customer inquiries",
+  "agent_type": "chat",
+  "platform": "whatsapp",
+  "platform_config": {
+    "webhook_url": "https://your-bot.com/webhook",
+    "phone_number": "+1234567890"
+  },
+  "status": "draft",
+  "is_active": true
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "team_id": "550e8400-e29b-41d4-a716-446655440000",
+    "created_by": "api-key-user",
+    "name": "Customer Support Bot",
+    "description": "AI agent for handling customer inquiries",
+    "agent_type": "chat",
+    "platform": "whatsapp",
+    "platform_config": {
+      "webhook_url": "https://your-bot.com/webhook",
+      "phone_number": "+1234567890"
+    },
+    "status": "draft",
+    "is_active": true,
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
   }
 }
 ```
 
-**Response:**
+**Features:**
 
-```json
-{
-  "id": "session-uuid",
-  "agentId": "agent-uuid",
-  "personaId": "persona-uuid",
-  "status": "pending",
-  "config": {
-    "duration": 300,
-    "maxMessages": 50,
-    "messageInterval": 30
-  },
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": "2024-01-15T10:30:00Z"
-}
-```
+- Automatically triggers Temporal workflow for persona and evaluation generation
+- Team-scoped access via API key
+- Returns agent with generated persona and evaluation IDs
 
-#### Get Session
+#### List Agents
 
 ```http
-GET /api/sessions/{sessionId}
+GET /api/cli/agents?limit=10&status=active&agent_type=chat&platform=whatsapp
 ```
 
-**Response:**
+**Headers:**
 
-```json
-{
-  "id": "session-uuid",
-  "agentId": "agent-uuid",
-  "personaId": "persona-uuid",
-  "status": "active",
-  "messages": [
-    {
-      "id": "message-uuid",
-      "sessionId": "session-uuid",
-      "senderType": "persona",
-      "content": "Hello, I need help with my order",
-      "timestamp": "2024-01-15T10:30:05Z"
-    }
-  ],
-  "metadata": {
-    "startTime": "2024-01-15T10:30:00Z",
-    "messageCount": 1
-  },
-  "createdAt": "2024-01-15T10:30:00Z",
-  "updatedAt": "2024-01-15T10:30:05Z"
-}
 ```
-
-#### List Sessions
-
-```http
-GET /api/sessions?page=1&limit=20&status=active
+X-API-Key: your-team-api-key
 ```
 
 **Query Parameters:**
 
-- `page` (number): Page number (default: 1)
-- `limit` (number): Items per page (default: 20, max: 100)
-- `status` (string): Filter by status (pending, active, completed, failed)
-- `agentId` (string): Filter by agent ID
-- `personaId` (string): Filter by persona ID
+- `limit` (number): Items per page (default: 10, max: 100)
+- `nextToken` (string): Cursor for pagination
+- `status` (string): Filter by status (draft, active, paused, archived)
+- `agent_type` (string): Filter by type (chat, voice)
+- `platform` (string): Filter by platform
 
 **Response:**
 
 ```json
 {
-  "data": [
-    {
-      "id": "session-uuid",
-      "agentId": "agent-uuid",
-      "personaId": "persona-uuid",
-      "status": "active",
-      "createdAt": "2024-01-15T10:30:00Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 150,
-    "pages": 8
+  "ok": true,
+  "data": {
+    "agents": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440001",
+        "team_id": "550e8400-e29b-41d4-a716-446655440000",
+        "created_by": "api-key-user",
+        "name": "Customer Support Bot",
+        "description": "AI agent for handling customer inquiries",
+        "agent_type": "chat",
+        "platform": "whatsapp",
+        "status": "active",
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "nextToken": "eyJpZCI6ImFnZW50XzQ1NiIsImNyZWF0ZWRfYXQiOiIyMDI0LTAxLTE1VDEwOjMwOjAwWiJ9",
+    "hasMore": true
   }
 }
 ```
 
-#### Stop Session
+#### Get Agent
 
 ```http
-DELETE /api/sessions/{sessionId}
+GET /api/cli/agents/{agentId}
 ```
 
-**Response:**
-
-```json
-{
-  "id": "session-uuid",
-  "status": "stopped",
-  "updatedAt": "2024-01-15T10:35:00Z"
-}
-```
-
-### Personas
-
-#### Create Persona
+#### Update Agent
 
 ```http
-POST /api/personas
+PUT /api/cli/agents/{agentId}
 ```
 
-**Request Body:**
-
-```json
-{
-  "name": "Frustrated Customer",
-  "description": "A customer who is having trouble with their order",
-  "prompt": "You are a frustrated customer who ordered a product online. The order was delayed, and you're calling customer service to get help. You're polite but clearly annoyed. You want a resolution quickly.",
-  "traits": {
-    "communication_style": "direct",
-    "patience_level": "low",
-    "urgency": "high"
-  },
-  "config": {
-    "messageInterval": 30,
-    "sessionDuration": 300
-  }
-}
-```
-
-**Response:**
-
-```json
-{
-  "id": "persona-uuid",
-  "name": "Frustrated Customer",
-  "description": "A customer who is having trouble with their order",
-  "prompt": "You are a frustrated customer...",
-  "traits": {
-    "communication_style": "direct",
-    "patience_level": "low",
-    "urgency": "high"
-  },
-  "config": {
-    "messageInterval": 30,
-    "sessionDuration": 300
-  },
-  "createdAt": "2024-01-15T10:00:00Z",
-  "updatedAt": "2024-01-15T10:00:00Z"
-}
-```
-
-#### Get Persona
+#### Delete Agent
 
 ```http
-GET /api/personas/{personaId}
+DELETE /api/cli/agents/{agentId}
 ```
 
-#### List Personas
-
-```http
-GET /api/personas?page=1&limit=20
-```
-
-#### Update Persona
-
-```http
-PUT /api/personas/{personaId}
-```
-
-#### Delete Persona
-
-```http
-DELETE /api/personas/{personaId}
-```
+### Web Dashboard Endpoints (JWT Authentication)
 
 ### Agents
 
@@ -248,17 +198,29 @@ DELETE /api/personas/{personaId}
 POST /api/agents
 ```
 
+**Headers:**
+
+```
+Authorization: Bearer your-clerk-jwt-token
+Content-Type: application/json
+```
+
 **Request Body:**
 
 ```json
 {
+  "team_id": "550e8400-e29b-41d4-a716-446655440000",
   "name": "My WhatsApp Bot",
-  "type": "whatsapp",
-  "config": {
+  "description": "AI agent for customer support",
+  "agent_type": "chat",
+  "platform": "whatsapp",
+  "platform_config": {
     "webhook_url": "https://your-bot.com/webhook",
     "phone_number": "+1234567890",
-    "api_key": "your-whatsapp-api-key"
-  }
+    "welcome_message": "Hello! How can I help you today?"
+  },
+  "status": "draft",
+  "is_active": true
 }
 ```
 
@@ -266,17 +228,25 @@ POST /api/agents
 
 ```json
 {
-  "id": "agent-uuid",
-  "name": "My WhatsApp Bot",
-  "type": "whatsapp",
-  "config": {
-    "webhook_url": "https://your-bot.com/webhook",
-    "phone_number": "+1234567890",
-    "api_key": "your-whatsapp-api-key"
-  },
-  "status": "active",
-  "createdAt": "2024-01-15T10:00:00Z",
-  "updatedAt": "2024-01-15T10:00:00Z"
+  "ok": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440001",
+    "team_id": "550e8400-e29b-41d4-a716-446655440000",
+    "created_by": "user_2abc123def456",
+    "name": "My WhatsApp Bot",
+    "description": "AI agent for customer support",
+    "agent_type": "chat",
+    "platform": "whatsapp",
+    "platform_config": {
+      "webhook_url": "https://your-bot.com/webhook",
+      "phone_number": "+1234567890",
+      "welcome_message": "Hello! How can I help you today?"
+    },
+    "status": "draft",
+    "is_active": true,
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -308,6 +278,83 @@ PUT /api/agents/{agentId}
 
 ```http
 DELETE /api/agents/{agentId}
+```
+
+### AI-Generated Data
+
+#### Agent Personas
+
+When agents are created via CLI, the system automatically generates realistic personas using OpenAI:
+
+```json
+{
+  "id": "persona-uuid",
+  "agent_id": "550e8400-e29b-41d4-a716-446655440001",
+  "team_id": "550e8400-e29b-41d4-a716-446655440000",
+  "created_by": "api-key-user",
+  "name": "Sarah Johnson",
+  "age": 34,
+  "occupation": "Marketing Manager",
+  "location": "San Francisco, CA",
+  "goals": [
+    "Resolve order issue quickly",
+    "Get clear communication about delivery status",
+    "Receive compensation for inconvenience"
+  ],
+  "frustrations": [
+    "Long wait times on hold",
+    "Unclear communication",
+    "Multiple transfers between departments"
+  ],
+  "typing_style": {
+    "formality": "casual",
+    "emoji_usage": "moderate",
+    "response_speed": "fast",
+    "communication_style": "direct"
+  },
+  "sample_phrases": [
+    "Hi, I need help with my order #12345",
+    "This is taking way too long",
+    "Can you please escalate this?"
+  ],
+  "stop_conditions": [
+    "Issue resolved satisfactorily",
+    "Clear timeline provided",
+    "Compensation offered"
+  ],
+  "simulation_tags": ["customer_service", "order_issue", "frustrated"],
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+#### Agent Evaluations
+
+The system also generates custom evaluation metrics for each agent:
+
+```json
+{
+  "id": "evaluation-uuid",
+  "agent_id": "550e8400-e29b-41d4-a716-446655440001",
+  "team_id": "550e8400-e29b-41d4-a716-446655440000",
+  "created_by": "api-key-user",
+  "name": "Response Time Evaluation",
+  "metric": "latency_ms",
+  "description": "Measures the time between customer message and agent response",
+  "method": "timestamp_diff",
+  "pass_criteria": {
+    "pass": "<= 5000",
+    "warning": "5001-10000",
+    "fail": "> 10000"
+  },
+  "severity": "high",
+  "notes": "Critical for customer satisfaction",
+  "llm_prompt": "Calculate the time difference between customer message timestamp and agent response timestamp",
+  "regex_example": null,
+  "is_active": true,
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
 ```
 
 ### Analytics
@@ -428,16 +475,32 @@ ws.onmessage = (event) => {
 
 ```json
 {
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid request data",
-    "details": [
-      {
-        "field": "agentId",
-        "message": "Agent ID is required"
-      }
-    ]
-  }
+  "ok": false,
+  "error": "Invalid request data",
+  "details": [
+    {
+      "field": "agentId",
+      "message": "Agent ID is required"
+    }
+  ]
+}
+```
+
+### API Key Authentication Errors
+
+```json
+{
+  "ok": false,
+  "error": "Invalid API key"
+}
+```
+
+### Team Scoping Errors
+
+```json
+{
+  "ok": false,
+  "error": "Agent not found or access denied"
 }
 ```
 
@@ -489,24 +552,33 @@ npm install @mimic/sdk
 ```javascript
 import { MimicClient } from '@mimic/sdk';
 
-const client = new MimicClient({
+// Web Dashboard Client (JWT)
+const webClient = new MimicClient({
   baseUrl: 'http://localhost:4000',
-  token: 'your-jwt-token',
+  token: 'your-clerk-jwt-token',
 });
 
-// Create a session
-const session = await client.sessions.create({
-  agentId: 'agent-uuid',
-  personaId: 'persona-uuid',
-  config: {
-    duration: 300,
-    maxMessages: 50,
+// CLI Client (API Key)
+const cliClient = new MimicClient({
+  baseUrl: 'http://localhost:4000',
+  apiKey: 'your-team-api-key',
+});
+
+// Create an agent via CLI
+const agent = await cliClient.cli.agents.create({
+  name: 'Customer Support Bot',
+  description: 'AI agent for handling customer inquiries',
+  agent_type: 'chat',
+  platform: 'whatsapp',
+  platform_config: {
+    webhook_url: 'https://your-bot.com/webhook',
   },
 });
 
-// Get session updates
-client.sessions.subscribe(session.id, (update) => {
-  console.log('Session update:', update);
+// List agents
+const agents = await cliClient.cli.agents.list({
+  limit: 10,
+  status: 'active',
 });
 ```
 
@@ -519,18 +591,20 @@ pip install mimic-sdk
 ```python
 from mimic_sdk import MimicClient
 
+# CLI Client (API Key)
 client = MimicClient(
     base_url="http://localhost:4000",
-    token="your-jwt-token"
+    api_key="your-team-api-key"
 )
 
-# Create a session
-session = client.sessions.create(
-    agent_id="agent-uuid",
-    persona_id="persona-uuid",
-    config={
-        "duration": 300,
-        "max_messages": 50
+# Create an agent
+agent = client.cli.agents.create(
+    name="Customer Support Bot",
+    description="AI agent for handling customer inquiries",
+    agent_type="chat",
+    platform="whatsapp",
+    platform_config={
+        "webhook_url": "https://your-bot.com/webhook"
     }
 )
 ```

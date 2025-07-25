@@ -169,6 +169,24 @@ export async function createAgent(request: FastifyRequest, data: CreateAgentRequ
             .returningAll()
             .execute();
 
+        // Trigger Temporal workflow for agent bootstrap
+        // This will generate personas and evaluations for the new agent
+        try {
+            // Trigger Temporal workflow for agent bootstrap
+            const { triggerAgentBootstrap } = await import('@/lib/temporal-client');
+            const workflowId = await triggerAgentBootstrap({
+                agentId: agent.id,
+                teamId: teamId,
+                agentName: data.name,
+                agentDescription: data.description,
+                platform: data.platform,
+            });
+            console.log(`✅ Agent bootstrap workflow triggered successfully. Workflow ID: ${workflowId}`);
+        } catch (workflowError) {
+            console.error('❌ Failed to trigger agent bootstrap workflow:', workflowError);
+            // Don't fail the agent creation if workflow trigger fails
+        }
+
         return agent;
     } catch (error) {
         // Handle database constraint violations

@@ -2,6 +2,9 @@ import { Database } from '@mimic/core';
 import { generatePersonaWithOpenAI, generateEvaluationsWithOpenAI, GeneratedPersona } from '../utils/openai';
 import { savePersonaToDatabase, saveEvaluationsToDatabase } from '../utils/database';
 
+// CLI system user ID for automated operations
+const CLI_SYSTEM_USER_ID = '550e8400-e29b-41d4-a716-446655440003';
+
 export interface GeneratePersonaInput {
     agentId: string;
     teamId: string;
@@ -35,7 +38,7 @@ export async function generatePersona(input: GeneratePersonaInput): Promise<void
         await savePersonaToDatabase(
             input.agentId,
             input.teamId,
-            '550e8400-e29b-41d4-a716-446655440003', // CLI system user ID
+            CLI_SYSTEM_USER_ID,
             persona
         );
 
@@ -62,7 +65,7 @@ export async function generateEvals(input: GenerateEvalsInput): Promise<void> {
         await saveEvaluationsToDatabase(
             input.agentId,
             input.teamId,
-            '550e8400-e29b-41d4-a716-446655440003', // CLI system user ID
+            CLI_SYSTEM_USER_ID,
             evaluations
         );
 

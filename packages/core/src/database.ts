@@ -11,6 +11,8 @@ export interface Database {
     users: UsersTable;
     team_members: TeamMembersTable;
     team_api_keys: TeamApiKeysTable;
+    agent_personas: AgentPersonasTable;
+    agent_evaluations: AgentEvaluationsTable;
 }
 
 export interface AgentsTable {
@@ -73,4 +75,50 @@ export interface TeamApiKeysTable {
     created_at: Date;
     updated_at: Date;
     is_active: boolean;
+}
+
+export interface AgentPersonasTable {
+    id: string;
+    agent_id: string;
+    team_id: string;
+    created_by: string;
+    name: string;
+    age: number | null;
+    gender: string | null;
+    location: string | null;
+    occupation: string | null;
+    tech_literacy: 'low' | 'medium' | 'high' | null;
+    preferred_channel: string | null;
+    background: string | null;
+    goals: string[];
+    frustrations: string[];
+    tone: string | null;
+    typing_style: Record<string, any>;
+    example_opening_message: string | null;
+    sample_phrases: string[];
+    stop_conditions: Record<string, any>;
+    simulation_tags: string[];
+    llm_prompt: string | null;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export interface AgentEvaluationsTable {
+    id: string;
+    agent_id: string;
+    team_id: string;
+    created_by: string;
+    name: string;
+    metric: string;
+    description: string;
+    method: string;
+    pass_criteria: Record<string, any>;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    llm_prompt: string | null;
+    regex_example: string | null;
+    notes: string | null;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
 } 

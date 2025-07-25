@@ -102,6 +102,11 @@ temp/
 ehthumbs.db
 Thumbs.db
 
+# Temporary test files
+test-*.ts
+debug-*.ts
+temp-*.ts
+
 # Turbo
 .turbo
 
